@@ -14,28 +14,26 @@ s="scripts/"
 
 if [[ $workers -eq 1 ]]; then
     juliacmd="julia -t$threads"
-    pythoncmd="python ${s}daskb.py 1 $threads"
 else
     juliacmd="julia -p$(($workers-1)) -t$threads"
-    pythoncmd="python ${s}daskb.py $workers $threads"
 fi
 
 runcmd() {
-    echo "starting $1"
+    echo "@@@ STARTING CONFIG: $1"
     eval $1
     sleep 2
-    echo "done $1"
+    echo "@@@ ENDING CONFIG:   $1"
 }
 
-eval "julia init.jl"
+eval "julia -t4 init.jl"
 
 trap "exit" INT
 for n in "${ns[@]}"; do
     for uvc in "${unique_vals_count[@]}"; do
         for chunksize in "${chunksizes[@]}"; do
-            runcmd "$juliacmd ${s}dtable1.jl $n $chunksize $uvc $ncols"
-            runcmd "$juliacmd ${s}dtable2.jl $n $chunksize $uvc $ncols"
-            runcmd "$juliacmd ${s}dtable3.jl $n $chunksize $uvc $ncols"
+            runcmd "$juliacmd ${s}dtable_basic.jl $n $chunksize $uvc $ncols"
+            runcmd "$juliacmd ${s}dtable_groupby.jl $n $chunksize $uvc $ncols"
+            runcmd "$juliacmd ${s}dtable_grouped_reduce.jl $n $chunksize $uvc $ncols"
         done
     done
 done

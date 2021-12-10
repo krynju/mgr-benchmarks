@@ -3,10 +3,7 @@ using Distributed
 @everywhere Pkg.activate(".")
 @everywhere using Dagger
 
-filename_prefix = "dtable_bench"
-include("common_stuff.jl")
-include("dagger_common.jl")
-
+include("intro_common.jl")
 
 fmap = (d) -> begin
     m = map(row -> (r = row.a1 + 1,), d)
@@ -32,12 +29,5 @@ fredsingle = (d) -> begin
     fetch(r)
 end
 w_test("reduce_var_single", fredsingle, d)
-
-# groupby_reduce_mean_all = (d) -> begin
-#     _g = Dagger.groupby(d, :a1)
-#     r = reduce(fit!, _g, init=Mean())
-#     fetch(r)
-# end
-# w_test("groupby_reduce_mean_all", groupby_reduce_mean_all, d, s=1)
 
 close(file)

@@ -13,18 +13,16 @@ ncols="4"
 s="scripts/"
 
 if [[ $workers -eq 1 ]]; then
-    juliacmd="julia -t$threads"
     pythoncmd="python ${s}daskb.py 1 $threads"
 else
-    juliacmd="julia -p$(($workers-1)) -t$threads"
     pythoncmd="python ${s}daskb.py $workers $threads"
 fi
 
 runcmd() {
-    echo "starting $1"
+    echo "@@@ STARTING CONFIG: $1"
     eval $1
     sleep 2
-    echo "done $1"
+    echo "@@@ ENDING CONFIG:   $1"
 }
 
 source python_prep.sh

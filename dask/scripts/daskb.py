@@ -1,4 +1,5 @@
 import math, time
+import os
 #from typing_extensions import runtime_checkable
 from dask.distributed import Client, wait
 from distributed.client import default_client
@@ -22,9 +23,12 @@ if __name__ == '__main__':
 
     x = da.random.randint(0, unique_values, size=(int(n), ncolumns), chunks=(max_chunksize, ncolumns))
     tablesize = 4 * ncolumns * n / 1_000_000
-    print("tablesize {} MB".format(tablesize))
+    print("@@@ TABLESIZE:       {} MB".format(tablesize))
 
-    filename = 'dask_bench' + str(round(time.time() * 1000)) + '.csv'
+    if not os.path.exists('results'):
+        os.mkdir('results')
+
+    filename = 'results/dask_bench' + str(round(time.time() * 1000)) + '.csv'
     file = open(filename, 'w')
     file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs\n')
 
@@ -33,7 +37,7 @@ if __name__ == '__main__':
         t = timeit.timeit(stmt=f, setup='gc.enable()', number=2)
         file.write('{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0))
         file.flush()
-        print('done '+ type + '\n')
+        print('@@@ DONE:            '+ type + '\n')
 
     df = dd.from_dask_array(x).persist()
     wait(df)

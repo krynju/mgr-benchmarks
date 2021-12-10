@@ -3,10 +3,7 @@ using Distributed
 @everywhere Pkg.activate(".");
 @everywhere using Dagger
 
-filename_prefix = "dtable_bench"
-include("common_stuff.jl")
-include("dagger_common.jl")
-
+include("intro_common.jl")
 
 groupby_single_col = (d) -> begin
     g = Dagger.groupby(d, :a1)
