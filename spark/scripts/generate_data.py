@@ -16,7 +16,7 @@ if __name__ == '__main__':
     print("@@@ TABLESIZE:       {} MB".format(tablesize))
     df = pd.DataFrame(np.random.randint(0, unique_values-1, size=(n, ncolumns)),columns=['a1', 'a2', 'a3', 'a4'])
     nchunks = int((n+max_chunksize-1)/max_chunksize)
-    os.mkdir("/home/sparkbenchmarks/data")
+    os.mkdir("data")
 
     for idx, chunk in enumerate(np.array_split(df, nchunks)):
-        chunk.to_csv(f'/home/sparkbenchmarks/data/datapart_{idx}.csv', index=False)
+        chunk.to_csv(f'data/datapart_{idx}.csv', index=False)

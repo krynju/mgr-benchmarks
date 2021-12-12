@@ -24,6 +24,8 @@ spark = SparkSession \
     .master('spark://spark:7077') \
     .getOrCreate()
 
+spark.sparkContext.setLogLevel('ERROR')
+
 @contextmanager
 def time_usage(name=""):
     start = time.time_ns()
@@ -38,7 +40,7 @@ schema = StructType() \
       .add("a3",IntegerType(),True) \
       .add("a4",IntegerType(),True)
 
-rpath = os.getcwd() + '/results'
+rpath = 'results'
 if not os.path.exists(rpath):
     os.mkdir(rpath)
 
@@ -56,14 +58,14 @@ def runb(type, f):
 npartitions = int((n+max_chunksize-1)/max_chunksize)
 
 with time_usage("load df2"):
-    df = spark.read.format("csv").options(header='True').schema(schema).load("/home/sparkbenchmarks/data").repartition(npartitions)
+    df = spark.read.format("csv").options(header='True').schema(schema).load(os.getcwd() + '/data').repartition(npartitions)
 
 runb('increment_map', lambda : df.rdd.map(lambda x: x['a1'] + 1).collect())
 runb('filter_half', lambda : df[df.a1 < unique_values/2].collect())
-runb('reduce_var_single', lambda : df.select(variance('a1')).show())
-runb('reduce_var_all', lambda : df.select(variance('a1'), variance('a2'), variance('a3'), variance('a4')).show())
+runb('reduce_var_single', lambda : df.select(variance('a1')).collect())
+runb('reduce_var_all', lambda : df.select(variance('a1'), variance('a2'), variance('a3'), variance('a4')).collect())
 runb('groupby_single_col', lambda : df.groupBy('a1'))
-runb('grouped_reduce_mean_singlecol', lambda : df.groupBy('a1').mean('a2').show())
-runb('grouped_reduce_mean_allcols', lambda : df.groupBy('a1').mean().show())
+runb('grouped_reduce_mean_singlecol', lambda : df.groupBy('a1').mean('a2').collect())
+runb('grouped_reduce_mean_allcols', lambda : df.groupBy('a1').mean().collect())
 
 file.close()

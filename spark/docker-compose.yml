@@ -14,7 +14,7 @@ services:
     ports:
       - '8080:8080'
     volumes:
-      - ./:/home/sparkbenchmarks/
+      - ../:/home/
   spark-worker:
     image: docker.io/bitnami/spark:3
     environment:
@@ -27,4 +27,4 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
     volumes:
-      - ./:/home/sparkbenchmarks/
+      - ../:/home/
