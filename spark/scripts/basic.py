@@ -1,25 +1,28 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType, StructType
-
-#Create PySpark SparkSession
+from pyspark.sql.functions import variance
 from contextlib import contextmanager
 import random
 import pandas as pd
 import numpy as np
 import time
 import logging
+import sys
+import os
+import timeit
+
+
+n = int(sys.argv[1])
+max_chunksize = int(sys.argv[2])
+unique_values = int(sys.argv[3])
+ncolumns = int(sys.argv[4])
 
 spark = SparkSession \
     .builder \
     .appName("basic_spark_benchmark") \
+    .config('spark.sql.shuffle.partitions', unique_values) \
     .master('spark://spark:7077') \
     .getOrCreate()
-
-
-# n = int(sys.argv[3])
-# max_chunksize = int(sys.argv[4])
-# unique_values = int(sys.argv[5])
-# ncolumns = int(sys.argv[6])
 
 @contextmanager
 def time_usage(name=""):
@@ -35,9 +38,32 @@ schema = StructType() \
       .add("a3",IntegerType(),True) \
       .add("a4",IntegerType(),True)
 
+rpath = os.getcwd() + '/results'
+if not os.path.exists(rpath):
+    os.mkdir(rpath)
+
+filename = rpath + '/spark_bench' + str(round(time.time() * 1000)) + '.csv'
+file = open(filename, 'w')
+file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs\n')
+file.flush()
+
+def runb(type, f):
+    t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
+    file.write('{},{},{},{},{},{},{},{},{},{}\n'.format('spark',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0))
+    file.flush()
+    print('@@@ DONE:            '+ type + '\n')
+
+npartitions = int((n+max_chunksize-1)/max_chunksize)
+
 with time_usage("load df2"):
-    df2 = spark.read.format("csv").options(header='True').schema(schema).load("/home/sparkbenchmarks/data")
+    df = spark.read.format("csv").options(header='True').schema(schema).load("/home/sparkbenchmarks/data").repartition(npartitions)
 
+runb('increment_map', lambda : df.rdd.map(lambda x: x['a1'] + 1).collect())
+runb('filter_half', lambda : df[df.a1 < unique_values/2].collect())
+runb('reduce_var_single', lambda : df.select(variance('a1')).show())
+runb('reduce_var_all', lambda : df.select(variance('a1'), variance('a2'), variance('a3'), variance('a4')).show())
+runb('groupby_single_col', lambda : df.groupBy('a1'))
+runb('grouped_reduce_mean_singlecol', lambda : df.groupBy('a1').mean('a2').show())
+runb('grouped_reduce_mean_allcols', lambda : df.groupBy('a1').mean().show())
 
-with time_usage("elo"):
-    df2.rdd.map(lambda x: x['a1'] + 1).collect()
+file.close()

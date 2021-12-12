@@ -19,4 +19,4 @@ if __name__ == '__main__':
     os.mkdir("/home/sparkbenchmarks/data")
 
     for idx, chunk in enumerate(np.array_split(df, nchunks)):
-        chunk.to_csv(f'/home/sparkbenchmarks/data/datapart_{idx}.csv')
+        chunk.to_csv(f'/home/sparkbenchmarks/data/datapart_{idx}.csv', index=False)
