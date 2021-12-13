@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType, StructType
-from pyspark.sql.functions import variance
+from pyspark.sql.functions import variance, count, mean
 from contextlib import contextmanager
 import random
 import pandas as pd
@@ -59,13 +59,16 @@ npartitions = int((n+max_chunksize-1)/max_chunksize)
 
 with time_usage("load df2"):
     df = spark.read.format("csv").options(header='True').schema(schema).load(os.getcwd() + '/data').repartition(npartitions)
+    df.count()
 
+runb('count', lambda : df.select(count('a1')).collect())
+runb('count', lambda : df.count())
 runb('increment_map', lambda : df.rdd.map(lambda x: x['a1'] + 1).count())
 runb('filter_half', lambda : df[df.a1 < unique_values/2].count())
-runb('reduce_var_single', lambda : df.select(variance('a1')).show())
-runb('reduce_var_all', lambda : df.select(variance('a1'), variance('a2'), variance('a3'), variance('a4')).show())
+runb('reduce_var_single', lambda : df.select(variance('a1')).collect())
+runb('reduce_var_all', lambda : df.select(variance('a1'), variance('a2'), variance('a3'), variance('a4')).collect())
 runb('groupby_single_col', lambda : df.groupBy('a1').count().collect())
-runb('grouped_reduce_mean_singlecol', lambda : df.groupBy('a1').mean('a2').show())
-runb('grouped_reduce_mean_allcols', lambda : df.groupBy('a1').mean().show())
+runb('grouped_reduce_mean_singlecol', lambda : df.groupBy('a1').mean('a2').collect())
+runb('grouped_reduce_mean_allcols', lambda : df.groupBy('a1').mean().collect())
 
 file.close()
