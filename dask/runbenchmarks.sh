@@ -5,9 +5,9 @@ chunksizes=('1000000')
 ns=('100000')
 unique_vals_count=('1000')
 
-# chunksizes=('1000000' '10000000')
-# ns=('1000000' '10000000' '100000000' '500000000' '1000000000')
-# unique_vals_count=('1000' '10000')
+    # chunksizes=('1000000' '10000000')
+    # ns=('1000000' '10000000' '100000000' '500000000' '1000000000')
+    # unique_vals_count=('1000' '10000')
 ncols="4"
 
 s="scripts/"
@@ -25,8 +25,8 @@ runcmd() {
     echo "@@@ ENDING CONFIG:   $1"
 }
 
-source python_prep.sh
-source venv/bin/activate
+# source python_prep.sh
+# source venv/bin/activate
 
 for n in "${ns[@]}"; do
     for uvc in "${unique_vals_count[@]}"; do
