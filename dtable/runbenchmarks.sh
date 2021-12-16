@@ -1,13 +1,14 @@
 threads=16
 workers=1
 
-# chunksizes=('1000000')
-# ns=('100000')
-# unique_vals_count=('1000')
+chunksizes=('1000000')
+ns=('100000')
+unique_vals_count=('1000')
 
-chunksizes=('1000000' '10000000')
-ns=('1000000' '10000000' '100000000' '500000000' '1000000000')
-unique_vals_count=('1000' '10000')
+# chunksizes=('1000000' '10000000')
+# ns=('1000000' '10000000' '100000000' '500000000' '1000000000')
+# ns=('500000000' '1000000000')
+# unique_vals_count=('1000' '10000')
 ncols="4"
 
 s="scripts/"
@@ -34,6 +35,7 @@ for n in "${ns[@]}"; do
             runcmd "$juliacmd ${s}dtable_basic.jl $n $chunksize $uvc $ncols"
             runcmd "$juliacmd ${s}dtable_groupby.jl $n $chunksize $uvc $ncols"
             runcmd "$juliacmd ${s}dtable_grouped_reduce.jl $n $chunksize $uvc $ncols"
+            # runcmd "$juliacmd ${s}dtable_innerjoin_small.jl $n $chunksize $uvc $ncols"
         done
     done
 done

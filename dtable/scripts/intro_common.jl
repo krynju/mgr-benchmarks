@@ -15,8 +15,12 @@ println("@@@ SAVING TO:       $filename")
 write(file, "tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs\n")
 
 
-run_bench = (f, arg, s) -> begin
-    @benchmark $f($arg) samples=s evals=1 gcsample=true
+run_bench = (f, arg, second_arg, s) -> begin
+    if second_arg === nothing
+        @benchmark $f($arg) samples=s evals=1 gcsample=true
+    else
+        @benchmark $f($arg, $second_arg) samples=s evals=1 gcsample=true
+    end
 end
 
 _gc = () -> begin
@@ -25,8 +29,8 @@ _gc = () -> begin
     end
 end
 
-w_test = (type, f, arg; s=2, prefix="dtable") -> begin
-    b = run_bench(f, arg, s)
+w_test = (type, f, arg; s=2, prefix="dtable", second_arg=nothing) -> begin
+    b = run_bench(f, arg, second_arg, s)
     m = minimum(b)
     s = "$prefix,$type,$n,$max_chunksize,$unique_values,$ncolumns,$(m.time),$(m.gctime),$(m.memory),$(m.allocs)\n"
     write(file, s)
@@ -36,8 +40,8 @@ w_test = (type, f, arg; s=2, prefix="dtable") -> begin
     b
 end
 
-rng = MersenneTwister(1111)
-data = (;[Symbol("a$i") => rand(rng, Int32(1):Int32(unique_values), n) for i in 1:ncolumns]...)
+# rng = MersenneTwister(1111)
+# data = (;[Symbol("a$i") => rand(rng, Int32(1):Int32(unique_values), n) for i in 1:ncolumns]...)
 
 _gc = () -> begin
     for i in 1:10
@@ -48,7 +52,18 @@ _gc = () -> begin
     end
 end
 
-d = DTable(data, max_chunksize)
-data = nothing
+# n = Int(5*1e8)
+# max_chunksize = Int(1e7)
+# unique_values = Int(1e4)
+# ncolumns = 4
+
+# d = DTable(data, max_chunksize)
+# data = nothing
+
+nchunks = (n+max_chunksize-1) ÷ max_chunksize
+
+genchunk = (rng) -> (;[Symbol("a$i") => rand(rng, Int32(1):Int32(unique_values), n÷nchunks) for i in 1:ncolumns]...)
+
+d = DTable([Dagger.@spawn genchunk(MersenneTwister(1111+i)) for i in 1:nchunks], NamedTuple)
 
 _gc(); _gc(); _gc();

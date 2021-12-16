@@ -1,13 +1,17 @@
 cd /home/spark
 python -m pip install -r requirements.txt &>/dev/null
 
-# chunksizes=('1000000')
-# ns=('1000000')
+chunksizes=('1000000')
+ns=('1000000')
+unique_vals_count=('1000')
+
+# chunksizes=('10000000')
+# ns=('10000000' '100000000' '500000000' '1000000000')
 # unique_vals_count=('1000')
 
-chunksizes=('1000000' '10000000')
-ns=('1000000' '10000000' '100000000' '500000000' '1000000000')
-unique_vals_count=('1000' '10000')
+# chunksizes=('1000000' '10000000')
+# ns=('1000000' '10000000' '100000000' '500000000' '1000000000')
+# unique_vals_count=('1000' '10000')
 ncols="4"
 
 pythoncmd="python "
