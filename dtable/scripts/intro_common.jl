@@ -5,6 +5,11 @@ max_chunksize = tryparse(Int, ARGS[2])
 unique_values = tryparse(Int32, ARGS[3])
 ncolumns = tryparse(Int, ARGS[4])
 
+# n = Int(1e8)
+# max_chunksize = Int(1e7)
+# unique_values = Int(1e3)
+# ncolumns = 4
+
 tablesize = sizeof(Int32) * ncolumns * n / 1_000_000
 println("@@@ TABLESIZE:       $tablesize MB")
 
@@ -24,12 +29,14 @@ run_bench = (f, arg, second_arg, s) -> begin
 end
 
 _gc = () -> begin
-    for i in 1:4
+    for i in 1:20
+        Dagger.@spawn 10+10
         GC.gc()
     end
 end
 
 w_test = (type, f, arg; s=2, prefix="dtable", second_arg=nothing) -> begin
+    _gc()
     b = run_bench(f, arg, second_arg, s)
     m = minimum(b)
     s = "$prefix,$type,$n,$max_chunksize,$unique_values,$ncolumns,$(m.time),$(m.gctime),$(m.memory),$(m.allocs)\n"
@@ -40,9 +47,6 @@ w_test = (type, f, arg; s=2, prefix="dtable", second_arg=nothing) -> begin
     b
 end
 
-# rng = MersenneTwister(1111)
-# data = (;[Symbol("a$i") => rand(rng, Int32(1):Int32(unique_values), n) for i in 1:ncolumns]...)
-
 _gc = () -> begin
     for i in 1:10
         Dagger.@spawn 10+10
@@ -51,14 +55,6 @@ _gc = () -> begin
         GC.gc()
     end
 end
-
-# n = Int(5*1e8)
-# max_chunksize = Int(1e7)
-# unique_values = Int(1e4)
-# ncolumns = 4
-
-# d = DTable(data, max_chunksize)
-# data = nothing
 
 nchunks = (n+max_chunksize-1) ÷ max_chunksize
 

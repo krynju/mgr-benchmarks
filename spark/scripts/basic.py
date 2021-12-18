@@ -71,4 +71,14 @@ runb('groupby_single_col', lambda : df.groupBy('a1').count().collect())
 runb('grouped_reduce_mean_singlecol', lambda : df.groupBy('a1').mean('a2').collect())
 runb('grouped_reduce_mean_allcols', lambda : df.groupBy('a1').mean().collect())
 
+d = {
+    "a1": np.arange(0, unique_values, dtype=np.int32),
+    "a5": np.arange(0, unique_values, dtype=np.int32)
+}
+
+df2 = spark.createDataFrame(pd.DataFrame(d))
+
+runb('innerjoin_r_unique', lambda: df.join(df2, df.a1 ==  df2.a1, "inner").count())
+
+
 file.close()
