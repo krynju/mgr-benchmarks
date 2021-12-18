@@ -4,6 +4,7 @@ using Distributed
 @everywhere using Dagger
 
 include("intro_common.jl")
+include("generate_dtable.jl")
 
 fmap = (d) -> begin
     m = map(row -> (r = row.a1 + 1,), d)

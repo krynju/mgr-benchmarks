@@ -4,6 +4,7 @@ using Distributed
 @everywhere using Dagger
 
 include("intro_common.jl")
+include("generate_dtable.jl")
 
 groupby_single_col = (d) -> begin
     g = Dagger.groupby(d, :a1)

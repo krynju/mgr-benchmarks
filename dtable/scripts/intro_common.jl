@@ -60,6 +60,4 @@ nchunks = (n+max_chunksize-1) ÷ max_chunksize
 
 genchunk = (rng) -> (;[Symbol("a$i") => rand(rng, Int32(1):Int32(unique_values), n÷nchunks) for i in 1:ncolumns]...)
 
-d = DTable([Dagger.@spawn genchunk(MersenneTwister(1111+i)) for i in 1:nchunks], NamedTuple)
 
-_gc(); _gc(); _gc();

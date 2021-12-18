@@ -1,22 +1,13 @@
-using Pkg;
-Pkg.activate(".");
-using Random, Arrow
+using Distributed
+@everywhere using Pkg;
+@everywhere Pkg.activate(".");
+using Random, Arrow, Dagger
 
-
-n = tryparse(Int, ARGS[1])
-max_chunksize = tryparse(Int, ARGS[2])
-unique_values = tryparse(Int32, ARGS[3])
-ncolumns = tryparse(Int, ARGS[4])
-
-# n = Int(1e8)
-# max_chunksize = Int(1e7)
-# unique_values = Int(1e3)
-# ncolumns = 4
+include("intro_common.jl")
 
 genchunk = (rng) -> (; [Symbol("a$i") => rand(rng, Int32(1):Int32(unique_values), n ÷ nchunks) for i = 1:ncolumns]...)
-rm("data_arrow", recursive=true)
+rm("data_arrow", recursive=true, force=true)
 mkpath("data_arrow")
-
 
 nchunks = (n + max_chunksize - 1) ÷ max_chunksize
 for i = 1:nchunks

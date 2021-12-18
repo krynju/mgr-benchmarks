@@ -1,5 +1,5 @@
-threads=16
-workers=1
+threads=4
+workers=4
 
 # chunksizes=('10000000')
 # ns=('500000000')
@@ -40,7 +40,7 @@ for n in "${ns[@]}"; do
 done
 
 chunksizes=('10000000')
-ns=('10000000')
+ns=('10000000' '100000000' '500000000' '1000000000')
 unique_vals_count=('1000')
 ncols="4"
 
@@ -48,7 +48,8 @@ for n in "${ns[@]}"; do
     for uvc in "${unique_vals_count[@]}"; do
         for chunksize in "${chunksizes[@]}"; do
             runcmd "$juliacmd ${s}dtable_full_scenario_generate_data.jl $n $chunksize $uvc $ncols"
-            runcmd "$juliacmd ${s}dtable_full_scenario.jl $n $chunksize $uvc $ncols"
+            runcmd "$juliacmd ${s}dtable_full_scenario_stages_benchmark.jl $n $chunksize $uvc $ncols"
+            runcmd "$juliacmd ${s}dtable_full_scenario_benchmark.jl $n $chunksize $uvc $ncols"
             rm -r data_arrow
         done
     done
