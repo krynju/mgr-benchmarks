@@ -2,19 +2,20 @@ using Distributed
 @everywhere using Pkg;
 @everywhere Pkg.activate(".");
 @everywhere using Dagger, Random
-using DataFrames, Arrow, Tables, OnlineStats
+using DataFrames, Tables, OnlineStats, CSV
 
 include("intro_common.jl")
 include("dtable_full_scenario_stages.jl")
 
-files_arrow = readdir("data_arrow", join = true)
+# files_arrow = readdir("data_arrow", join = true)
+files_csv = readdir("data", join = true)
 
 b = @benchmark begin
     scenario_table_load()
 end samples=1 evals=1 gcsample=false
 
 d = scenario_table_load()
-
+_gc()
 
 ##############
 
@@ -24,7 +25,7 @@ b = @benchmark begin
 end samples=1 evals=1 gcsample=false
 
 save_results(b, "scenario_full_table_statistics")
-
+_gc()
 ##########
 
 b = @benchmark begin
@@ -32,14 +33,14 @@ b = @benchmark begin
 end samples=1 evals=1 gcsample=false
 
 save_results(b, "scenario_count_unique_a1")
-
+_gc()
 #######################
 # rowwise sum and reduce
 b = @benchmark begin
     scenario_rowwise_sum_and_mean_reduce(d)
 end samples=1 evals=1 gcsample=false
 save_results(b, "scenario_rowwise_sum_and_mean_reduce")
-
+_gc()
 #########################
 b = @benchmark begin
     scenario_grouped_a1_statistics(d)

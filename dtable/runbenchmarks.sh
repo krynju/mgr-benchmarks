@@ -28,16 +28,16 @@ runcmd() {
 eval "julia -t4 init.jl"
 
 trap "exit" INT
-for n in "${ns[@]}"; do
-    for uvc in "${unique_vals_count[@]}"; do
-        for chunksize in "${chunksizes[@]}"; do
-            runcmd "$juliacmd ${s}dtable_basic.jl $n $chunksize $uvc $ncols"
-            runcmd "$juliacmd ${s}dtable_groupby.jl $n $chunksize $uvc $ncols"
-            runcmd "$juliacmd ${s}dtable_grouped_reduce.jl $n $chunksize $uvc $ncols"
-            runcmd "$juliacmd ${s}dtable_innerjoin_unique.jl $n $chunksize $uvc $ncols"
-        done
-    done
-done
+# for n in "${ns[@]}"; do
+#     for uvc in "${unique_vals_count[@]}"; do
+#         for chunksize in "${chunksizes[@]}"; do
+#             runcmd "$juliacmd ${s}dtable_basic.jl $n $chunksize $uvc $ncols"
+#             runcmd "$juliacmd ${s}dtable_groupby.jl $n $chunksize $uvc $ncols"
+#             runcmd "$juliacmd ${s}dtable_grouped_reduce.jl $n $chunksize $uvc $ncols"
+#             runcmd "$juliacmd ${s}dtable_innerjoin_unique.jl $n $chunksize $uvc $ncols"
+#         done
+#     done
+# done
 
 chunksizes=('10000000')
 ns=('10000000' '100000000' '500000000' '1000000000')
@@ -50,7 +50,7 @@ for n in "${ns[@]}"; do
             runcmd "$juliacmd ${s}dtable_full_scenario_generate_data.jl $n $chunksize $uvc $ncols"
             runcmd "$juliacmd ${s}dtable_full_scenario_stages_benchmark.jl $n $chunksize $uvc $ncols"
             runcmd "$juliacmd ${s}dtable_full_scenario_benchmark.jl $n $chunksize $uvc $ncols"
-            rm -r data_arrow
+            rm -r data
         done
     done
 done

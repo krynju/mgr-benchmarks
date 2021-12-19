@@ -15,7 +15,8 @@ end
 ##############
 
 function scenario_table_load()
-    d = DTable(Arrow.Table, files_arrow)
+    d = DTable(x->CSV.read(x, NamedTuple, types=Int32), files_csv)
+    # d = DTable(Arrow.Table, files_arrow)
     # d = DTable(Arrow.Table(files_arrow), max_chunksize; use_spawn=true)
     tabletype!(d)
     d
@@ -27,7 +28,8 @@ function scenario_full_table_statistics(d)
     rd = DataFrame(r)
     rd[:, :col] .= [Tables.columnnames(Tables.columns(d))...]
     select!(rd, :col, :stats => ByRow(unwrap_series) => rcolnames)
-    Arrow.write("series_result.arrow", rd)
+    # Arrow.write("series_result.arrow", rd)
+    CSV.write("series_result.csv", rd)
     nothing
 end
 
@@ -37,7 +39,8 @@ function scenario_count_unique_a1(d)
     c = CountMap()
     r = fetch(reduce(fit!, d, cols=[:a1], init = c))
     rd = DataFrame((value=i[1], count=i[2]) for i in r.a1.value)
-    Arrow.write("countmap.arrow", rd)
+    # Arrow.write("countmap.arrow", rd)
+    CSV.write("countmap.csv", rd)
 end
 
 #######################
@@ -53,7 +56,8 @@ function scenario_grouped_a1_statistics(d)
     r = fetch(reduce(fit!, d, cols = [:a2, :a3, :a4], init = Series(Mean(), Variance(), Extrema())))
     rd = DataFrame(r)
     select!(rd, :a1, [r => ByRow(row -> unwrap_series(row.stats)) => r .* "_" .* rcolnames for r in names(rd)[2:end]]...)
-    Arrow.write("group_series_result.arrow", rd)
+    # Arrow.write("group_series_result.arrow", rd)
+    CSV.write("group_series_result.csv", rd)
 end
 
 nothing

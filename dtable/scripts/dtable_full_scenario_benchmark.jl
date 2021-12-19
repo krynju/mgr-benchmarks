@@ -2,14 +2,14 @@ using Distributed
 @everywhere using Pkg;
 @everywhere Pkg.activate(".");
 @everywhere using Dagger, Random
-using DataFrames, Arrow, Tables, OnlineStats
+using DataFrames, Tables, OnlineStats, CSV
 
 include("intro_common.jl")
 include("dtable_full_scenario_stages.jl")
 
-files_arrow = readdir("data_arrow", join = true)
+# files_arrow = readdir("data_arrow", join = true)
 
-
+files_csv = readdir("data", join = true)
 
 ##############
 b = @benchmark begin
