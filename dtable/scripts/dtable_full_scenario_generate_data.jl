@@ -1,7 +1,8 @@
 using Distributed
 @everywhere using Pkg;
 @everywhere Pkg.activate(".");
-using Random, Dagger, CSV
+@everywhere using Dagger
+@everywhere using CSV
 # using Arrow
 
 include("intro_common.jl")
@@ -17,3 +18,5 @@ for i = 1:nchunks
     # Arrow.write(joinpath(["data_arrow", "datapart_$i.arrow"]), genchunk(MersenneTwister(1111+i)))
     CSV.write(joinpath(["data", "datapart_$i.csv"]), genchunk(MersenneTwister(1111+i)))
 end
+
+close(file)

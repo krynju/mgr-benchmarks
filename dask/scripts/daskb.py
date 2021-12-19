@@ -30,12 +30,12 @@ if __name__ == '__main__':
 
     filename = 'results/dask_bench' + str(round(time.time() * 1000)) + '.csv'
     file = open(filename, 'w')
-    file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs\n')
+    file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs,workers,threads\n')
 
 
     def runb(type, f):
         t = timeit.timeit(stmt=f, setup='gc.enable()', number=2)
-        file.write('{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0))
+        file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
         file.flush()
         print('@@@ DONE:            '+ type + '\n')
 

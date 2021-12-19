@@ -1,8 +1,9 @@
 using Distributed
 @everywhere using Pkg;
 @everywhere Pkg.activate(".");
-@everywhere using Dagger, Random
-using DataFrames, Tables, OnlineStats, CSV
+@everywhere using Dagger
+@everywhere using CSV
+@everywhere using DataFrames
 
 include("intro_common.jl")
 include("dtable_full_scenario_stages.jl")
@@ -13,7 +14,7 @@ files_csv = readdir("data", join = true)
 b = @benchmark begin
     scenario_table_load()
 end samples=1 evals=1 gcsample=false
-
+_gc()
 d = scenario_table_load()
 _gc()
 
@@ -46,3 +47,4 @@ b = @benchmark begin
     scenario_grouped_a1_statistics(d)
 end samples=1 evals=1 gcsample=false
 save_results(b, "scenario_grouped_a1_statistics")
+close(file)

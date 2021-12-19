@@ -11,11 +11,12 @@ import sys
 import os
 import timeit
 
-
-n = int(sys.argv[1])
-max_chunksize = int(sys.argv[2])
-unique_values = int(sys.argv[3])
-ncolumns = int(sys.argv[4])
+workers = int(sys.argv[1])
+threads = int(sys.argv[2])
+n = int(sys.argv[3])
+max_chunksize = int(sys.argv[4])
+unique_values = int(sys.argv[5])
+ncolumns = int(sys.argv[6])
 
 spark = SparkSession \
     .builder \
@@ -46,12 +47,12 @@ if not os.path.exists(rpath):
 
 filename = rpath + '/spark_bench' + str(round(time.time() * 1000)) + '.csv'
 file = open(filename, 'w')
-file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs\n')
+file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs,workers,threads\n')
 file.flush()
 
 def runb(type, f):
     t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
-    file.write('{},{},{},{},{},{},{},{},{},{}\n'.format('spark',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0))
+    file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('spark',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
     file.flush()
     print('@@@ DONE:            '+ type + '\n')
 

@@ -1,2 +1,2 @@
 docker build -t dtable .
-docker run -v --rm ./../:/home dtable
+docker run --rm -v ~/mgr-benchmarks/:/home dtable

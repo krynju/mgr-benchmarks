@@ -5,7 +5,7 @@ max_chunksize = tryparse(Int, ARGS[2])
 unique_values = tryparse(Int32, ARGS[3])
 ncolumns = tryparse(Int, ARGS[4])
 
-# n = Int(1e8)
+# n = Int(1e7)
 # max_chunksize = Int(1e7)
 # unique_values = Int(1e3)
 # ncolumns = 4
@@ -17,7 +17,7 @@ mkpath("results")
 filename = joinpath(["results", "dtable_bench" * string(round(Int, Dates.datetime2unix(now()))) * ".csv"])
 file = open(filename, "w")
 println("@@@ SAVING TO:       $filename")
-write(file, "tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs\n")
+write(file, "tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs,workers,threads\n")
 
 
 run_bench = (f, arg, second_arg, s) -> begin
@@ -39,7 +39,7 @@ w_test = (type, f, arg; s=2, prefix="dtable", second_arg=nothing) -> begin
     _gc()
     b = run_bench(f, arg, second_arg, s)
     m = minimum(b)
-    s = "$prefix,$type,$n,$max_chunksize,$unique_values,$ncolumns,$(m.time),$(m.gctime),$(m.memory),$(m.allocs)\n"
+    s = "$prefix,$type,$n,$max_chunksize,$unique_values,$ncolumns,$(m.time),$(m.gctime),$(m.memory),$(m.allocs),$(nworkers()),$(Threads.nthreads())\n"
     write(file, s)
     flush(file)
     println("@@@ DONE:            $type")

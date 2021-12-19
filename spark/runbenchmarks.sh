@@ -1,9 +1,8 @@
 cd /home/spark
 python -m pip install -r requirements.txt &>/dev/null
 
-# chunksizes=('1000000')
-# ns=('1000000')
-# unique_vals_count=('1000')
+workers="4"
+threads="4"
 
 chunksizes=('10000000')
 ns=('10000000' '100000000' '500000000' '1000000000')
@@ -26,7 +25,7 @@ for n in "${ns[@]}"; do
         rm -r data
         runcmd "python scripts/generate_data.py $n $uvc $ncols"
         for chunksize in "${chunksizes[@]}"; do
-            runcmd "spark-submit scripts/basic.py $n $chunksize $uvc $ncols"
+            runcmd "spark-submit scripts/basic.py $workers $threads $n $chunksize $uvc $ncols"
         done
     done
 done
