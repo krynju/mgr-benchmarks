@@ -1,9 +1,9 @@
 import math, time
 import os
-#from typing_extensions import runtime_checkable
 from dask.distributed import Client, wait
 from distributed.client import default_client
 import pandas as pd
+import numpy as np
 import timeit
 import sys
 import dask.array as da
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         file.flush()
         print('@@@ DONE:            '+ type + '\n')
 
-    df = dd.from_dask_array(x).persist()
+    df = dd.from_dask_array(x, columns=['a1','a2','a3','a4']).persist()
     wait(df)
     x = None
 
@@ -53,18 +53,5 @@ if __name__ == '__main__':
     runb('reduce_var_all', lambda : df.var().compute())
 
     runb('reduce_var_single', lambda : df[0].var().compute())
-
-    # runb('groupby_reduce_mean_all', lambda : df.shuffle(0, shuffle='tasks', npartitions=unique_values).groupby(0).mean().compute())
-
-    runb('groupby_single_col', lambda : wait(df.shuffle(0, shuffle='tasks', npartitions=unique_values).persist()))
-
-
-
-    gf = df.shuffle(0, shuffle='disk', npartitions=unique_values).persist()
-    df = None
-    wait(gf)
-
-    runb('grouped_reduce_mean_singlecol', lambda : gf.groupby(0)[1].mean().compute())
-    runb('grouped_reduce_mean_allcols', lambda : gf.groupby(0).mean().compute())
 
     file.close()

@@ -47,7 +47,7 @@ function process_group(group)
     for t in techs
         tech = first(t.tech)
         x = t.n
-        y = t.time
+        y = t.time / 1e9 / 60
         plot!(
             p, x, y,
             label=tech,
