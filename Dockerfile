@@ -4,7 +4,9 @@ RUN set -eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		ca-certificates \
+		g++ \
 		curl \
+		wget \
 	; \
 	rm -rf /var/lib/apt/lists/*
 

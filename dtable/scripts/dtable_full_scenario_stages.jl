@@ -12,6 +12,8 @@ save_results = (b, type) -> begin
     flush(file)
 end
 
+mkpath("scenario_output")
+
 ##############
 
 function scenario_table_load()
@@ -29,7 +31,7 @@ function scenario_full_table_statistics(d)
     rd[:, :col] .= [Tables.columnnames(Tables.columns(d))...]
     select!(rd, :col, :stats => ByRow(unwrap_series) => rcolnames)
     # Arrow.write("series_result.arrow", rd)
-    CSV.write("series_result.csv", rd)
+    CSV.write("scenario_output/series_result.csv", rd)
     nothing
 end
 
@@ -40,7 +42,7 @@ function scenario_count_unique_a1(d)
     r = fetch(reduce(fit!, d, cols=[:a1], init = c))
     rd = DataFrame((value=i[1], count=i[2]) for i in r.a1.value)
     # Arrow.write("countmap.arrow", rd)
-    CSV.write("countmap.csv", rd)
+    CSV.write("scenario_output/countmap.csv", rd)
 end
 
 #######################
@@ -57,7 +59,7 @@ function scenario_grouped_a1_statistics(d)
     rd = DataFrame(r)
     select!(rd, :a1, [r => ByRow(row -> unwrap_series(row.stats)) => r .* "_" .* rcolnames for r in names(rd)[2:end]]...)
     # Arrow.write("group_series_result.arrow", rd)
-    CSV.write("group_series_result.csv", rd)
+    CSV.write("scenario_output/group_series_result.csv", rd)
 end
 
 nothing

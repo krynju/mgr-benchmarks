@@ -11,10 +11,10 @@ trap "exit" INT
 s="scripts/"
 
 benchmarkloop() {
-    if [[ $w -eq 1 ]]; then
-        juliacmd="julia -t$t"
+    if [[ $w -eq 1 ]]; then 
+        juliacmd="julia -J /tmp/jlsysimage/sysimage.so -t$t"
     else
-        juliacmd="julia -p$(($w-1)) -t$t"
+        juliacmd="julia -J /tmp/jlsysimage/sysimage.so -p$(($w-1)) -t$t"
     fi
 
     for n in "${ns[@]}"; do
@@ -43,25 +43,28 @@ benchmarkloop() {
 }
 
 
-# threaded
-workers="1"
-threads=('8' '16' '32')
-chunksizes=('10000000' '25000000')
-ns=('10000000' '100000000' '500000000' '1000000000')
-unique_vals_count=('1000' '10000')
-ncols="4"
+# # threaded
+# workers="1"
+# threads=('8' '16' '32')
+# chunksizes=('10000000' '25000000')
+# # ns=('10000000' '100000000' '500000000' '1000000000')
+# ns=('10000000')
+# unique_vals_count=('1000' '10000')
+# ncols="4"
 
-for t in "${threads[@]}"; do
-    w=$workers
-    benchmarkloop
-done
+# for t in "${threads[@]}"; do
+#     w=$workers
+#     benchmarkloop
+# done
 
 # with workers
 workers=('2' '4' '8' '12')
 threads="4"
-chunksizes=('10000000', '25000000')
-ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
+chunksizes=('10000000' '25000000')
+# ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
+ns=('10000000')
 unique_vals_count=('1000')
+ncols="4"
 
 for w in "${workers[@]}"; do
     t=$threads
@@ -69,7 +72,9 @@ for w in "${workers[@]}"; do
 done
 
 # with workers bigger uvc
-ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
+# ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
+ns=('10000000')
+ncols="4"
 unique_vals_count=('10000')
 for w in "${workers[@]}"; do
     t=$threads
