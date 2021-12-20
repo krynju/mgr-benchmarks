@@ -8,6 +8,7 @@ import timeit
 import sys
 import dask.array as da
 import dask.dataframe as dd
+from daskb_scenario_stages import *
 
 workers = int(sys.argv[1])
 threads = int(sys.argv[2])
@@ -16,12 +17,17 @@ max_chunksize = int(sys.argv[4])
 unique_values = int(sys.argv[5])
 ncolumns = int(sys.argv[6])
 
+# workers = 4
+# threads = 4
+# n = int(1e7)
+# max_chunksize = int(1e7)
+# unique_values = int(1e3)
+# ncolumns = int(4)
+
 if __name__ == '__main__':
     client = Client(n_workers=workers, threads_per_worker=threads, processes=False, memory_limit='32GB')
     client.restart()
 
-
-    x = da.random.randint(0, unique_values, size=(int(n), ncolumns), chunks=(max_chunksize, ncolumns))
     tablesize = 4 * ncolumns * n / 1_000_000
     print("@@@ TABLESIZE:       {} MB".format(tablesize))
 
@@ -34,24 +40,23 @@ if __name__ == '__main__':
 
 
     def runb(type, f):
-        t = timeit.timeit(stmt=f, setup='gc.enable()', number=2)
+        t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
         file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
         file.flush()
         print('@@@ DONE:            '+ type + '\n')
 
-    df = dd.from_dask_array(x, columns=['a1','a2','a3','a4']).persist()
-    wait(df)
-    x = None
+    npartitions = int((n+max_chunksize-1)/max_chunksize)
 
+    runb('scenario_table_load', lambda : scenario_table_load(dd, np, npartitions))
 
+    df = scenario_table_load(dd, np, npartitions)
 
+    runb('scenario_full_table_statistics', lambda : scenario_full_table_statistics(df))
 
-    runb('increment_map', lambda : wait((df['a1'] + 1).persist()))
+    runb('scenario_count_unique_a1', lambda : scenario_count_unique_a1(df))
 
-    runb('filter_half', lambda : df[df['a1'] < unique_values /2].compute())
+    runb('scenario_rowwise_sum_and_mean_reduce', lambda : scenario_rowwise_sum_and_mean_reduce(df))
 
-    runb('reduce_var_all', lambda : df.var().compute())
-
-    runb('reduce_var_single', lambda : df['a1'].var().compute())
+    runb('scenario_grouped_a1_statistics', lambda: scenario_grouped_a1_statistics(df))
 
     file.close()

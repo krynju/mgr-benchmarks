@@ -27,12 +27,12 @@ end
 function scenario_full_table_statistics(d)
     s = Series(Mean(), Variance(), Extrema())
     r = fetch(reduce(fit!, d, init = s))
-    rd = DataFrame(r)
-    rd[:, :col] .= [Tables.columnnames(Tables.columns(d))...]
-    select!(rd, :col, :stats => ByRow(unwrap_series) => rcolnames)
+    # rd = DataFrame(r)
+    # rd[:, :col] .= [Tables.columnnames(Tables.columns(d))...]
+    # select!(rd, :col, :stats => ByRow(unwrap_series) => rcolnames)
     # Arrow.write("series_result.arrow", rd)
-    CSV.write("scenario_output/series_result.csv", rd)
-    nothing
+    # CSV.write("scenario_output/series_result.csv", rd)
+    # nothing
 end
 
 ##########
@@ -40,9 +40,9 @@ end
 function scenario_count_unique_a1(d)
     c = CountMap()
     r = fetch(reduce(fit!, d, cols=[:a1], init = c))
-    rd = DataFrame((value=i[1], count=i[2]) for i in r.a1.value)
+    # rd = DataFrame((value=i[1], count=i[2]) for i in r.a1.value)
     # Arrow.write("countmap.arrow", rd)
-    CSV.write("scenario_output/countmap.csv", rd)
+    # CSV.write("scenario_output/countmap.csv", rd)
 end
 
 #######################
@@ -56,10 +56,10 @@ end
 function scenario_grouped_a1_statistics(d)
     d = Dagger.groupby(d, :a1)
     r = fetch(reduce(fit!, d, cols = [:a2, :a3, :a4], init = Series(Mean(), Variance(), Extrema())))
-    rd = DataFrame(r)
-    select!(rd, :a1, [r => ByRow(row -> unwrap_series(row.stats)) => r .* "_" .* rcolnames for r in names(rd)[2:end]]...)
+    # rd = DataFrame(r)
+    # select!(rd, :a1, [r => ByRow(row -> unwrap_series(row.stats)) => r .* "_" .* rcolnames for r in names(rd)[2:end]]...)
     # Arrow.write("group_series_result.arrow", rd)
-    CSV.write("scenario_output/group_series_result.csv", rd)
+    # CSV.write("scenario_output/group_series_result.csv", rd)
 end
 
 nothing

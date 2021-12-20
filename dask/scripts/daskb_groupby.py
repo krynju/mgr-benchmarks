@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
 
     def runb(type, f):
-        t = timeit.timeit(stmt=f, setup='gc.enable()', number=2)
+        t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
         file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
         file.flush()
         print('@@@ DONE:            '+ type + '\n')
@@ -44,13 +44,13 @@ if __name__ == '__main__':
     x = None
 
 
-    runb('groupby_single_col', lambda : wait(df.shuffle(0, shuffle='tasks', npartitions=unique_values).persist()))
+    runb('groupby_single_col', lambda : wait(df.shuffle('a1', shuffle='tasks', npartitions=unique_values).persist()))
 
-    gf = df.shuffle(0, shuffle='disk', npartitions=unique_values).persist()
+    gf = df.shuffle('a1', shuffle='disk', npartitions=unique_values).persist()
     df = None
     wait(gf)
 
-    runb('grouped_reduce_mean_singlecol', lambda : gf.groupby(0)[1].mean().compute())
-    runb('grouped_reduce_mean_allcols', lambda : gf.groupby(0).mean().compute())
+    runb('grouped_reduce_mean_singlecol', lambda : gf.groupby('a1')['a2'].mean().compute())
+    runb('grouped_reduce_mean_allcols', lambda : gf.groupby('a1').mean().compute())
 
     file.close()

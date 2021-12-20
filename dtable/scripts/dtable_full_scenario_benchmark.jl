@@ -2,7 +2,7 @@ using Distributed
 @everywhere using Pkg;
 @everywhere Pkg.activate(".");
 @everywhere using Dagger
-@everywhere using CSV
+# @everywhere using CSV
 @everywhere using DataFrames
 
 include("intro_common.jl")

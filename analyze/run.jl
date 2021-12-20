@@ -11,13 +11,13 @@ end
 result_files = vcat(get_result_files.(wdirs)...)
 d = CSV.read(result_files, DataFrame)
 dropmissing!(d)
-d = d[d.chunksize .!= 1000_000, :]
+d = d[d.chunksize .!= 1_000_000, :]
 d = d[d.n .!= 1_000_000, :]
 d = d[d.type .!= "count", :]
 
 
 sort!(d, [:n, :time])
-d = combine(groupby(d, [:tech, :type, :chunksize, :n, :unique_vals]), first)
+d = combine(groupby(d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
 g = groupby(d, [:type, :chunksize, :unique_vals, :workers, :threads])
 
 benchmarks = combine(d, :type => unique)
@@ -55,7 +55,7 @@ function process_group(group)
         )
     end
     display(p)
-    savefig(p, "plots/$(f.type)_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
+    savefig(p, "plots/w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))_$(f.type).png")
 end
 
 for gg in g
