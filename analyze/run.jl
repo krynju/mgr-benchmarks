@@ -14,6 +14,7 @@ dropmissing!(d)
 d = d[d.chunksize .!= 1_000_000, :]
 d = d[d.n .!= 1_000_000, :]
 d = d[d.type .!= "count", :]
+d = d[d.type .!= "scenario_full_run", :]
 
 
 sort!(d, [:n, :time])
@@ -54,8 +55,8 @@ function process_group(group)
             linecolor=color_mapping[tech]
         )
     end
-    display(p)
-    savefig(p, "plots/w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))_$(f.type).png")
+    # display(p)
+    @async savefig(p, "plots/w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))_$(f.type).png")
 end
 
 for gg in g

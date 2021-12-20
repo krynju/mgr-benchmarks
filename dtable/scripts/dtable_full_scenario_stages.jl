@@ -7,7 +7,7 @@ end
 
 save_results = (b, type) -> begin
     m = minimum(b)
-    s = "dtable,$type,$n,$max_chunksize,$unique_values,$ncolumns,$(m.time),$(m.gctime),$(m.memory),$(m.allocs),$(nworkers()),$(Threads.nthreads())\n"
+    s = "dtable,$type,$n,$max_chunksize,$unique_values,$ncolumns,$(m.time),$(m.gctime),$(m.memory),$(m.allocs),$(nprocs()),$(Threads.nthreads())\n"
     write(file, s)
     flush(file)
 end

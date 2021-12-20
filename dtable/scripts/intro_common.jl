@@ -39,7 +39,7 @@ w_test = (type, f, arg; s=2, prefix="dtable", second_arg=nothing) -> begin
     _gc()
     b = run_bench(f, arg, second_arg, s)
     m = minimum(b)
-    s = "$prefix,$type,$n,$max_chunksize,$unique_values,$ncolumns,$(m.time),$(m.gctime),$(m.memory),$(m.allocs),$(nworkers()),$(Threads.nthreads())\n"
+    s = "$prefix,$type,$n,$max_chunksize,$unique_values,$ncolumns,$(m.time),$(m.gctime),$(m.memory),$(m.allocs),$(nprocs()),$(Threads.nthreads())\n"
     write(file, s)
     flush(file)
     println("@@@ DONE:            $type")
