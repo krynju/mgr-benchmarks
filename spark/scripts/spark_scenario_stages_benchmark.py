@@ -58,32 +58,50 @@ def runb(type, f):
 
 npartitions = int((n+max_chunksize-1)/max_chunksize)
 
-with time_usage("load df2"):
+def load_df():
     df = spark.read.format("csv").options(header='True').schema(schema).load(os.getcwd() + '/data').repartition(npartitions)
     df.count()
+    return df
 
-runb('count', lambda : df.select(count('a1')).collect())
-runb('count', lambda : df.count())
-
-
-############## benchmarks
-
-runb('increment_map', lambda : df.rdd.map(lambda x: x['a1'] + 1).count())
-runb('filter_half', lambda : df[df.a1 < unique_values/2].count())
-runb('reduce_var_single', lambda : df.select(variance('a1')).collect())
-runb('reduce_var_all', lambda : df.select(variance('a1'), variance('a2'), variance('a3'), variance('a4')).collect())
-runb('groupby_single_col', lambda : df.groupBy('a1').count().collect())
-runb('grouped_reduce_mean_singlecol', lambda : df.groupBy('a1').mean('a2').collect())
-runb('grouped_reduce_mean_allcols', lambda : df.groupBy('a1').mean().collect())
-
-d = {
-    "a1": np.arange(0, unique_values, dtype=np.int32),
-    "a5": np.arange(0, unique_values, dtype=np.int32)
-}
-
-df2 = spark.createDataFrame(pd.DataFrame(d))
 
 runb('innerjoin_r_unique', lambda: df.join(df2, df.a1 ==  df2.a1, "inner").count())
+
+runb('scenario_table_load', lambda : load_df())
+
+df = load_df()
+
+
+def scenario_full_table_statistics(d):
+    _max = d.max().compute()
+    _min = d.min().compute()
+    _var = d.var().compute()
+    _mean = d.mean().compute()
+
+##########
+
+def scenario_count_unique_a1(d):
+    return d['a1'].value_counts().compute()
+
+
+#######################
+# rowwise sum and reduce
+
+def scenario_rowwise_sum_and_mean_reduce(d):
+    d.apply(sum, axis=1, meta=(None, 'int32')).mean().compute()
+
+
+def scenario_grouped_a1_statistics(d):
+    g = d.groupby('a1')
+    _max = g.max().compute()
+    _min = g.min().compute()
+    _var = g.var().compute()
+    _mean = g.mean().compute()
+
+
+runb('scenario_full_table_statistics', lambda : scenario_full_table_statistics(df))
+runb('scenario_count_unique_a1', lambda : scenario_count_unique_a1(df))
+runb('scenario_rowwise_sum_and_mean_reduce', lambda : scenario_rowwise_sum_and_mean_reduce(df))
+runb('scenario_grouped_a1_statistics', lambda: scenario_grouped_a1_statistics(df))
 
 
 file.close()

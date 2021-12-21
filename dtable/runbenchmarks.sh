@@ -10,11 +10,16 @@ eval "julia -t4 init.jl"
 trap "exit" INT
 s="scripts/"
 
+# sysimagepath="sysimage.so"
+# juliapath="~/../../cygwin64/home/krynjupc/julia/julia.bat"
+sysimagepath="/tmp/jlsysimage/sysimage.so"
+juliapath="julia"
+
 benchmarkloop() {
     if [[ $w -eq 1 ]]; then 
-        juliacmd="julia -J /tmp/jlsysimage/sysimage.so -t$t"
+        juliacmd="$juliapath -J $sysimagepath -t$t"
     else
-        juliacmd="julia -J /tmp/jlsysimage/sysimage.so -p$(($w-1)) -t$t"
+        juliacmd="$juliapath -J $sysimagepath -p$(($w-1)) -t$t"
     fi
 
     for n in "${ns[@]}"; do
@@ -35,7 +40,6 @@ benchmarkloop() {
             for chunksize in "${chunksizes[@]}"; do
                 runcmd "$juliacmd ${s}dtable_full_scenario_generate_data.jl $n $chunksize $uvc $ncols"
                 runcmd "$juliacmd ${s}dtable_full_scenario_stages_benchmark.jl $n $chunksize $uvc $ncols"
-                runcmd "$juliacmd ${s}dtable_full_scenario_benchmark.jl $n $chunksize $uvc $ncols"
                 rm -r data
             done
         done
@@ -44,26 +48,30 @@ benchmarkloop() {
 
 
 # # threaded
-# workers="1"
-# threads=('8' '16' '32')
-# chunksizes=('10000000' '25000000')
-# # ns=('10000000' '100000000' '500000000' '1000000000')
-# ns=('10000000')
-# unique_vals_count=('1000' '10000')
-# ncols="4"
+workers="1"
+threads=('8' '16' '32')
+# threads=('8' '16')
+chunksizes=('10000000' '25000000')
+# chunksizes=('10000000')
+ns=('10000000' '100000000' '500000000' '1000000000')
+# ns=('500000000')
+unique_vals_count=('1000' '10000')
+# unique_vals_count=('1000'   )
+ncols="4"
 
-# for t in "${threads[@]}"; do
-#     w=$workers
-#     benchmarkloop
-# done
+for t in "${threads[@]}"; do
+    w=$workers
+    benchmarkloop
+done
 
 # with workers
 workers=('2' '4' '8' '12')
 threads="4"
 chunksizes=('10000000' '25000000')
-# ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
-ns=('10000000')
-unique_vals_count=('1000')
+# chunksizes=('10000000')
+ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
+# ns=('500000000')
+unique_vals_count=('1000' '10000')
 ncols="4"
 
 for w in "${workers[@]}"; do
@@ -72,11 +80,10 @@ for w in "${workers[@]}"; do
 done
 
 # with workers bigger uvc
-# ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
-ns=('10000000')
-ncols="4"
+ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
 unique_vals_count=('10000')
 for w in "${workers[@]}"; do
     t=$threads
     benchmarkloop
 done
+

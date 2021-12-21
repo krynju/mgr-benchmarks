@@ -5,10 +5,12 @@ import timeit
 import sys
 import numpy as np
 
-n = int(sys.argv[1])
-unique_values = int(sys.argv[2])
-ncolumns = int(sys.argv[3])
-max_chunksize = 10000000
+workers = int(sys.argv[1])
+threads = int(sys.argv[2])
+n = int(sys.argv[3])
+max_chunksize = int(sys.argv[4])
+unique_values = int(sys.argv[5])
+ncolumns = int(sys.argv[6])
 
 def gen_and_save(idx):
     df = pd.DataFrame(np.random.randint(0, unique_values-1, size=(max_chunksize, ncolumns)),columns=['a1', 'a2', 'a3', 'a4'])

@@ -1,15 +1,8 @@
 cd /home/spark
 python -m pip install -r requirements.txt &>/dev/null
 
-workers="4"
+workers=$1
 threads="4"
-
-chunksizes=('10000000')
-ns=('10000000' '100000000' '500000000' '1000000000')
-unique_vals_count=('1000' '10000')
-ncols="4"
-
-pythoncmd="python "
 
 runcmd() {
     echo "@@@ STARTING CONFIG: $1"
@@ -18,15 +11,42 @@ runcmd() {
     echo "@@@ ENDING CONFIG:   $1"
 }
 
-
-
-for n in "${ns[@]}"; do
-    for uvc in "${unique_vals_count[@]}"; do
-        rm -r data
-        runcmd "python scripts/generate_data.py $n $uvc $ncols"
+benchmarkloop() {
+    for n in "${ns[@]}"; do
         for chunksize in "${chunksizes[@]}"; do
-            runcmd "spark-submit scripts/basic.py $workers $threads $n $chunksize $uvc $ncols"
+            for uvc in "${unique_vals_count[@]}"; do
+                runcmd "python scripts/generate_data.py $workers $threads $n $chunksize $uvc $ncols"
+                if [ "$uvc" == "1000" ]; then
+                    runcmd "spark-submit scripts/spark_basic.py $workers $threads $n $chunksize $uvc $ncols"
+                fi
+                runcmd "spark-submit scripts/spark_groupby.py $workers $threads $n $chunksize $uvc $ncols"
+                runcmd "spark-submit scripts/spark_join.py $workers $threads $n $chunksize $uvc $ncols"
+                runcmd "spark-submit scripts/spark_scenario_stages_benchmark.py $workers $threads $n $chunksize $uvc $ncols"
+                rm -r data
+            done
         done
     done
+}
+
+# with workers
+workers=('2' '4' '8' '12')
+threads="4"
+chunksizes=('10000000' '25000000')
+# chunksizes=('10000000')
+ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
+# ns=('500000000')
+unique_vals_count=('1000')
+ncols="4"
+
+for w in "${workers[@]}"; do
+    t=$threads
+    benchmarkloop
 done
 
+# with workers bigger uvc
+ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
+unique_vals_count=('10000')
+for w in "${workers[@]}"; do
+    t=$threads
+    benchmarkloop
+done
