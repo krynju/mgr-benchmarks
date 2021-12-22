@@ -1,17 +1,3 @@
-threads=16
-workers=1
-
-# chunksizes=('1000000')
-# ns=('100000')
-# unique_vals_count=('1000')
-
-chunksizes=('1000000' '10000000')
-ns=('1000000' '10000000' '100000000' '500000000' '1000000000')
-unique_vals_count=('1000' '10000')
-ncols="4"
-w=$workers
-t=$threads
-
 s="scripts/"
 
 runcmd() {
@@ -21,6 +7,7 @@ runcmd() {
     echo "@@@ ENDING CONFIG:   $1"
 }
 
+trap "exit" INT
 
 benchmarkloop() {
     for n in "${ns[@]}"; do
@@ -46,13 +33,13 @@ benchmarkloop() {
     done
 }
 
+# ns=('10000000')
 
 # threaded
 workers="1"
 threads=('8' '16' '32')
 chunksizes=('10000000' '25000000')
-ns=('10000000')
-# ns=('10000000' '100000000' '500000000' '1000000000')
+ns=('10000000' '100000000' '500000000' '1000000000')
 unique_vals_count=('1000' '10000')
 ncols="4"
 
@@ -64,7 +51,7 @@ done
 # with workers
 workers=('2' '4' '8' '12')
 threads="4"
-chunksizes=('10000000', '25000000')
+chunksizes=('10000000' '25000000')
 ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
 unique_vals_count=('1000')
 

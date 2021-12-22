@@ -13,7 +13,7 @@ unique_values = int(sys.argv[5])
 ncolumns = int(sys.argv[6])
 
 def gen_and_save(idx):
-    df = pd.DataFrame(np.random.randint(0, unique_values-1, size=(max_chunksize, ncolumns)), columns=['a1', 'a2', 'a3', 'a4'])
+    df = pd.DataFrame(np.random.randint(1, unique_values+1, size=(max_chunksize, ncolumns), dtype=np.int32), columns=['a1', 'a2', 'a3', 'a4'])
     df.to_csv(f'data/datapart_{idx}.csv', index=False)
 
 import concurrent.futures

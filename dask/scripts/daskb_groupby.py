@@ -17,11 +17,11 @@ unique_values = int(sys.argv[5])
 ncolumns = int(sys.argv[6])
 
 if __name__ == '__main__':
-    client = Client(n_workers=workers, threads_per_worker=threads, processes=False, memory_limit='32GB')
+    client = Client(n_workers=workers, threads_per_worker=threads, processes=False)
     client.restart()
 
 
-    x = da.random.randint(0, unique_values, size=(int(n), ncolumns), chunks=(max_chunksize, ncolumns))
+    x = da.random.randint(0, unique_values, size=(int(n), ncolumns), chunks=(max_chunksize, ncolumns), dtype=np.int32)
     tablesize = 4 * ncolumns * n / 1_000_000
     print("@@@ TABLESIZE:       {} MB".format(tablesize))
 
@@ -34,6 +34,7 @@ if __name__ == '__main__':
 
 
     def runb(type, f):
+        print('@@@ STARTED:         '+ type + '\n')
         t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
         file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
         file.flush()
