@@ -2,3 +2,4 @@
 *.arrow
 *.png
 dask-worker-space
+*.tar.gz
