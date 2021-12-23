@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     def runb(type, f):
         print('@@@ STARTED:         '+ type + '\n')
-        t = timeit.timeit(stmt=f, setup='gc.enable()', number=2)
+        t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
         file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
         file.flush()
         print('@@@ DONE:            '+ type + '\n')

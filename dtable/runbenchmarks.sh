@@ -47,16 +47,12 @@ benchmarkloop() {
 }
 
 
-# # threaded
+# threaded
 workers="1"
-threads=('8' '16' '32')
-# threads=('8' '16')
+threads=('8' '16')
 chunksizes=('10000000' '25000000')
-# chunksizes=('10000000')
 ns=('10000000' '100000000' '500000000' '1000000000')
-# ns=('500000000')
 unique_vals_count=('1000' '10000')
-# unique_vals_count=('1000'   )
 ncols="4"
 
 for t in "${threads[@]}"; do
@@ -65,25 +61,23 @@ for t in "${threads[@]}"; do
 done
 
 # with workers
-workers=('2' '4' '8' '12')
+workers=('4' '8' '12')
 threads="4"
 chunksizes=('10000000' '25000000')
-# chunksizes=('10000000')
 ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
-# ns=('500000000')
-unique_vals_count=('1000' '10000')
-ncols="4"
+# ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
+unique_vals_count=('1000')
 
 for w in "${workers[@]}"; do
     t=$threads
-    benchmarkloop
+    # benchmarkloop
 done
 
 # with workers bigger uvc
+# ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
 ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
 unique_vals_count=('10000')
 for w in "${workers[@]}"; do
     t=$threads
-    benchmarkloop
+    # benchmarkloop
 done
-

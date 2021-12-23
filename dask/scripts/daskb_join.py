@@ -21,7 +21,7 @@ if __name__ == '__main__':
     client.restart()
 
 
-    x = da.random.randint(0, unique_values, size=(int(n), ncolumns), chunks=(max_chunksize, ncolumns), dtype=np.int32)
+    x = da.random.randint(1, unique_values+1, size=(int(n), ncolumns), chunks=(max_chunksize, ncolumns), dtype=np.int32)
     tablesize = 4 * ncolumns * n / 1_000_000
     print("@@@ TABLESIZE:       {} MB".format(tablesize))
 

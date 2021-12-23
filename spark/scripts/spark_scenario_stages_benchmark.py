@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType, StructType
-from pyspark.sql.functions import variance, count, mean
+from pyspark.sql.functions import variance, count, mean, min, max, col, countDistinct
 from contextlib import contextmanager
 import random
 import pandas as pd
@@ -51,10 +51,12 @@ file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs
 file.flush()
 
 def runb(type, f):
+    print('@@@ STARTED:         '+ type + '\n')
     t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
+    print('@@@ DONE:            '+ type + '\n')
     file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('spark',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
     file.flush()
-    print('@@@ DONE:            '+ type + '\n')
+
 
 npartitions = int((n+max_chunksize-1)/max_chunksize)
 
@@ -64,38 +66,41 @@ def load_df():
     return df
 
 
-runb('innerjoin_r_unique', lambda: df.join(df2, df.a1 ==  df2.a1, "inner").count())
-
 runb('scenario_table_load', lambda : load_df())
 
-df = load_df()
-
+with time_usage("load df2"):
+    df = spark.read.format("csv").options(header='True').schema(schema).load(os.getcwd() + '/data').repartition(npartitions)
+    df.count()
 
 def scenario_full_table_statistics(d):
-    _max = d.max().compute()
-    _min = d.min().compute()
-    _var = d.var().compute()
-    _mean = d.mean().compute()
+    d.select(
+        *[mean(c) for c in d.columns],
+        *[variance(c) for c in d.columns],
+        *[min(c) for c in d.columns],
+        *[max(c) for c in d.columns]
+    ).show()
+
 
 ##########
 
 def scenario_count_unique_a1(d):
-    return d['a1'].value_counts().compute()
+    df.groupBy("a1").count().show()
 
 
 #######################
 # rowwise sum and reduce
 
 def scenario_rowwise_sum_and_mean_reduce(d):
-    d.apply(sum, axis=1, meta=(None, 'int32')).mean().compute()
+    d.select(mean(col("a1") + col("a2") + col("a3") + col("a4"))).show()
 
 
 def scenario_grouped_a1_statistics(d):
-    g = d.groupby('a1')
-    _max = g.max().compute()
-    _min = g.min().compute()
-    _var = g.var().compute()
-    _mean = g.mean().compute()
+    d.groupby('a1').agg(
+        *[mean(c) for c in d.columns],
+        *[variance(c) for c in d.columns],
+        *[min(c) for c in d.columns],
+        *[max(c) for c in d.columns]
+    ).show()
 
 
 runb('scenario_full_table_statistics', lambda : scenario_full_table_statistics(df))

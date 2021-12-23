@@ -51,6 +51,7 @@ file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs
 file.flush()
 
 def runb(type, f):
+    print('@@@ STARTED:         '+ type + '\n')
     t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
     file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('spark',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
     file.flush()
