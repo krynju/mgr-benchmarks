@@ -1,1 +1,1 @@
-docker-compose up --scale spark-worker=4
+docker-compose up --env-file=envs/worker4.env --scale spark-worker=4

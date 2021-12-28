@@ -1,21 +1,7 @@
-using CSV, DataFrames, Printf, Plots
+using Printf, Plots
+include("load_data.jl")
 
-wdirs = ["dask", "dtable", "spark"]
-
-function get_result_files(wdir)
-    a = readdir(wdir, join=true)
-    r_only = filter(x-> occursin("result", x), a)
-    vcat(readdir.(r_only, join=true)...)
-end
-
-result_files = vcat(get_result_files.(wdirs)...)
-d = CSV.read(result_files, DataFrame)
-dropmissing!(d)
-d = d[d.chunksize .!= 1_000_000, :]
-d = d[d.n .!= 1_000_000, :]
-d = d[d.type .!= "count", :]
-d = d[d.type .!= "scenario_full_run", :]
-
+d = load_data()
 
 sort!(d, [:n, :time])
 d = combine(groupby(d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)

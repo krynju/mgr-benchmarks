@@ -1,1 +1,1 @@
-docker exec -it spark_spark_1 /bin/bash /home/spark/runbenchmarks.sh
+docker exec -it spark_spark_1 bash -c "cd /home/spark; bash runbenchmarks.sh 4;"
