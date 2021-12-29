@@ -25,39 +25,41 @@ ncolumns = int(sys.argv[6])
 # ncolumns = int(4)
 
 if __name__ == '__main__':
-    client = Client(n_workers=workers, threads_per_worker=threads, processes=False)
-    client.restart()
+    with Client(n_workers=workers, threads_per_worker=threads, processes=False) as client:
 
-    tablesize = 4 * ncolumns * n / 1_000_000
-    print("@@@ TABLESIZE:       {} MB".format(tablesize))
+        tablesize = 4 * ncolumns * n / 1_000_000
+        print("@@@ TABLESIZE:       {} MB".format(tablesize))
 
-    if not os.path.exists('results'):
-        os.mkdir('results')
+        if not os.path.exists('results'):
+            os.mkdir('results')
 
-    filename = 'results/dask_bench' + str(round(time.time() * 1000)) + '.csv'
-    file = open(filename, 'w')
-    file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs,workers,threads\n')
+        filename = 'results/dask_bench' + str(round(time.time() * 1000)) + '.csv'
+        with open(filename, 'a') as file:
+            file.write('tech,type,n,chunksize,unique_vals,ncolumns,time,gctime,memory,allocs,workers,threads\n')
 
 
-    def runb(type, f):
-        print('@@@ STARTED:         '+ type + '\n')
-        t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
-        file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
-        file.flush()
-        print('@@@ DONE:            '+ type + '\n')
+        def runb(type, f):
+            print('@@@ STARTED:         '+ type + '\n')
+            t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
+            with open(filename, 'a') as file:
+                file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
+                file.flush()
+            print('@@@ DONE:            '+ type + '\n')
 
-    npartitions = int((n+max_chunksize-1)/max_chunksize)
+        npartitions = int((n+max_chunksize-1)/max_chunksize)
 
-    runb('scenario_table_load', lambda : scenario_table_load(dd, np, npartitions))
+        # runb('scenario_table_load', lambda : scenario_table_load(dd, np, npartitions))
 
-    df = scenario_table_load(dd, np, npartitions)
+        df = scenario_table_load(dd, np, npartitions)
 
-    runb('scenario_full_table_statistics', lambda : scenario_full_table_statistics(df))
+        # runb('scenario_full_table_statistics', lambda : scenario_full_table_statistics(df))
 
-    runb('scenario_count_unique_a1', lambda : scenario_count_unique_a1(df))
+        # runb('scenario_count_unique_a1', lambda : scenario_count_unique_a1(df))
 
-    runb('scenario_rowwise_sum_and_mean_reduce', lambda : scenario_rowwise_sum_and_mean_reduce(df))
+        runb('scenario_rowwise_sum_and_mean_reduce', lambda : scenario_rowwise_sum_and_mean_reduce(df))
 
-    runb('scenario_grouped_a1_statistics', lambda: scenario_grouped_a1_statistics(df))
-
-    file.close()
+        # runb('scenario_grouped_a1_statistics', lambda: scenario_grouped_a1_statistics(df))
+        try:
+            client.shutdown()
+        except:
+            os.system('taskkill /F /PID %d' % os.getpid())

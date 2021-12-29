@@ -23,3 +23,10 @@ function load_data()
     d = d[d.workers .!= 2, :]
     d = d[.!((d.type .∈ Ref(basic_types)).&(d.unique_vals .== 10000)),: ]
 end
+
+color_palette = palette(:tab10)
+color_mapping = Dict(
+    "dtable" => color_palette[3],
+    "dask" => color_palette[1],
+    "spark" => color_palette[2]
+)

@@ -9,16 +9,8 @@ g = groupby(d, [:type, :chunksize, :unique_vals, :workers, :threads])
 
 benchmarks = combine(d, :type => unique)
 
-rm("plots", force=true, recursive=true)
+# rm("plots", force=true, recursive=true)
 mkpath("plots")
-
-color_palette = palette(:tab10)
-color_mapping = Dict(
-    "dtable" => color_palette[3],
-    "dask" => color_palette[1],
-    "spark" => color_palette[2]
-)
-
 
 function process_group(group)
     techs = groupby(group, :tech)

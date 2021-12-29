@@ -18,7 +18,6 @@ def gen_and_save(idx):
 
 import concurrent.futures
 if __name__ == '__main__':
-
     tablesize = 4 * ncolumns * n / 1_000_000
     print("@@@ TABLESIZE:       {} MB".format(tablesize))
     nchunks = int((n+max_chunksize-1)/max_chunksize)
