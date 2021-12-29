@@ -1,3 +1,7 @@
+DISPLAY_PLOTS = false
+SAVE_PLOTS = true
+SAVEDIR = "plots"
+
 using Printf, Plots
 include("load_data.jl")
 
@@ -10,7 +14,7 @@ g = groupby(d, [:type, :chunksize, :unique_vals, :workers, :threads])
 benchmarks = combine(d, :type => unique)
 
 # rm("plots", force=true, recursive=true)
-mkpath("plots")
+mkpath(SAVEDIR)
 
 function process_group(group)
     techs = groupby(group, :tech)
@@ -33,8 +37,8 @@ function process_group(group)
             linecolor=color_mapping[tech]
         )
     end
-    # display(p)
-    @async savefig(p, "plots/w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))_$(f.type).png")
+    DISPLAY_PLOTS && display(p)
+    SAVE_PLOTS && savefig(p, SAVEDIR * "/w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))_$(f.type).png")
 end
 
 for gg in g
