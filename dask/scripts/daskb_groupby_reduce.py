@@ -48,7 +48,8 @@ if __name__ == '__main__':
         wait(df)
         x = None
 
-        runb('groupby_single_col', lambda : wait(df.shuffle('a1', shuffle='tasks', npartitions=unique_values).persist()))
+        runb('grouped_reduce_mean_singlecol', lambda : df.groupby('a1')['a2'].mean().compute())
+        runb('grouped_reduce_mean_allcols', lambda : df.groupby('a1').mean().compute())
 
         sys.stdout.flush()
         if sys.platform == 'win32':
