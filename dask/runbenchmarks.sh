@@ -17,7 +17,6 @@ benchmarkloop() {
                     runcmd "python ${s}daskb_basic.py $w $t $n $chunksize $uvc $ncols"
                 fi
                 runcmd "python ${s}daskb_groupby.py $w $t $n $chunksize $uvc $ncols"
-                runcmd "python ${s}daskb_groupby_reduce.py $w $t $n $chunksize $uvc $ncols"
                 runcmd "python ${s}daskb_join.py $w $t $n $chunksize $uvc $ncols"
             done
         done
@@ -50,9 +49,9 @@ done
 # with workers
 workers=('4')
 threads="4"
-chunksizes=('100000')
+chunksizes=('10000000')
 # ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
-ns=('100000000' '500000000' '1000000000')
+ns=('10000000' '100000000' '500000000' '1000000000')
 # ns=('10000000')
 unique_vals_count=('1000')
 
