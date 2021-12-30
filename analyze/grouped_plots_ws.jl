@@ -5,7 +5,16 @@ SAVEDIR = "plots2"
 using Printf, Plots
 include("load_data.jl")
 
-d = combine(groupby(load_data(), [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
+color_palette = palette(:tab10)
+color_mapping = Dict(
+    "dtable" => color_palette[3],
+    "dask" => color_palette[1],
+    "spark" => color_palette[2]
+)
+
+d = load_data()
+sort!(d, [:n, :time])
+d = combine(groupby(d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
 sort!(d, :n)
 mkpath(SAVEDIR)
 
@@ -49,6 +58,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
             plot!(
                 p, x, y,
                 label = tech,
+                marker = :star,
+                markercolor = color_mapping[tech],
                 linecolor = color_mapping[tech],
                 subplot = i
             )
@@ -103,6 +114,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
             plot!(
                 p, x, y,
                 label = tech,
+                marker = :star,
+                markercolor = color_mapping[tech],
                 linecolor = color_mapping[tech],
                 subplot = i
             )
@@ -113,6 +126,7 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
     DISPLAY_PLOTS && display(p)
     @async SAVE_PLOTS && savefig(p, SAVEDIR * "/advanced_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
 end
+
 
 
 scenario_ops = [
@@ -156,6 +170,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
             y = t.time ./ 1e9
             plot!(
                 p, x, y,
+                marker = :star,
+                markercolor = color_mapping[tech],
                 label = tech,
                 linecolor = color_mapping[tech],
                 subplot = i
@@ -163,7 +179,6 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
         end
     end
     techs = groupby(gg, :tech)
-    fg = first(g)
     plot!(
         p,
         subplot = 6,

@@ -7,6 +7,14 @@ include("load_data.jl")
 
 d = load_data()
 
+color_palette = palette(:tab10)
+color_mapping = Dict(
+    "dtable" => color_palette[3],
+    "dask" => color_palette[1],
+    "spark" => color_palette[2]
+)
+
+
 sort!(d, [:n, :time])
 d = combine(groupby(d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
 g = groupby(d, [:type, :chunksize, :unique_vals, :workers, :threads])
@@ -22,10 +30,10 @@ function process_group(group)
 
     title = "$(f.type)\nw=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
     p = plot(
-        title=title,
-        xscale=:log10,
-        yscale=:log10,
-        legend=:topleft
+        title = title,
+        xscale = :log10,
+        yscale = :log10,
+        legend = :topleft
     )
     for t in techs
         tech = first(t.tech)
@@ -33,8 +41,10 @@ function process_group(group)
         y = t.time / 1e9 / 60
         plot!(
             p, x, y,
-            label=tech,
-            linecolor=color_mapping[tech]
+            label = tech,
+            marker = :star,
+            markercolor = color_mapping[tech],
+            linecolor = color_mapping[tech]
         )
     end
     DISPLAY_PLOTS && display(p)

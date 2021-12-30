@@ -43,16 +43,16 @@ loopy()
 threads = [4]
 workers = [4, 8, 12]
 ns = Int[1e7, 1e8, 5e8, 1e9, 2e9, 3e9]
-chunksizes = Int[1e7, 2.5e7]
+chunksizes = Int[1e7]
 unique_vals = Int[1e3]
 loopy()
 
 threads = [4]
 workers = [4, 8, 12]
 ns = Int[1e7, 1e8, 5e8, 1e9, 2e9]
-chunksizes = Int[1e7, 2.5e7]
+chunksizes = Int[1e7]
 unique_vals = Int[1e4]
-
+    
 loopy()
 configs
 
