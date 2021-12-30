@@ -62,7 +62,7 @@ for t in "${threads[@]}"; do
 done
 
 # with workers
-workers=('4' '8' '12')
+workers=('4')
 threads="4"
 chunksizes=('10000000')
 # ns=('10000000' '100000000' '500000000' '1000000000' '2000000000' '3000000000')
