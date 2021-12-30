@@ -8,6 +8,7 @@ import timeit
 import sys
 import dask.array as da
 import dask.dataframe as dd
+from datetime import datetime
 
 workers = int(sys.argv[1])
 threads = int(sys.argv[2])
@@ -34,12 +35,14 @@ if __name__ == '__main__':
 
 
         def runb(type, f):
-            print('@@@ STARTED:         '+ type + '\n')
+            print('@@@ STARTED:         {} {}\n'.format(type, datetime.now()))
+            sys.stdout.flush()
             t = timeit.timeit(stmt=f, setup='gc.enable()', number=1)
             with open(filename, 'a') as file:
                 file.write('{},{},{},{},{},{},{},{},{},{},{},{}\n'.format('dask',type, n, max_chunksize,unique_values,ncolumns, t*1e9, 0, 0, 0, workers, threads))
                 file.flush()
-            print('@@@ DONE:            '+ type + '\n')
+            print('@@@ DONE:            {} {}\n'.format(type, datetime.now()))
+            sys.stdout.flush()
 
         df = dd.from_dask_array(x, columns=['a1','a2','a3','a4']).persist()
         wait(df)
@@ -54,7 +57,18 @@ if __name__ == '__main__':
 
         runb('grouped_reduce_mean_singlecol', lambda : gf.groupby('a1')['a2'].mean().compute())
         runb('grouped_reduce_mean_allcols', lambda : gf.groupby('a1').mean().compute())
+
+        sys.stdout.flush()
+        if sys.platform == 'win32':
+            client.run(os.system('taskkill /F /PID %d' % os.getpid()))
+        else:
+            client.run(os.system('kill -9 %d' % os.getpid()))
+
         try:
             client.shutdown()
         except:
-            os.system('taskkill /F /PID %d' % os.getpid())
+            if sys.platform == 'win32':
+                os.system('taskkill /F /PID %d' % os.getpid())
+            else:
+                print("trying to kill")
+                os.system('kill -9 %d' % os.getpid())

@@ -23,8 +23,6 @@ if __name__ == '__main__':
     nchunks = int((n+max_chunksize-1)/max_chunksize)
     os.mkdir("data")
 
-
-
     with concurrent.futures.ProcessPoolExecutor(max_workers=10) as executor:
         for idx in range(nchunks):
             executor.submit(gen_and_save, idx)

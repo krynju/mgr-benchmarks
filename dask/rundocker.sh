@@ -1,2 +1,2 @@
 docker build -t dask .
-docker run -v --rm ./../:/home dask
+docker run --rm -v ~/mgr-benchmarks/:/home dask
