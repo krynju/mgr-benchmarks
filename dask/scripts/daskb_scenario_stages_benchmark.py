@@ -26,7 +26,7 @@ ncolumns = int(sys.argv[6])
 # ncolumns = int(4)
 
 if __name__ == '__main__':
-    with Client(n_workers=workers, threads_per_worker=threads, processes=False) as client:
+    with Client(n_workers=workers, threads_per_worker=threads, processes=True) as client:
 
         tablesize = 4 * ncolumns * n / 1_000_000
         print("@@@ TABLESIZE:       {} MB".format(tablesize))
@@ -58,10 +58,8 @@ if __name__ == '__main__':
         runb('scenario_full_table_statistics', lambda : scenario_full_table_statistics(df))
 
         runb('scenario_count_unique_a1', lambda : scenario_count_unique_a1(df))
-
-        runb('scenario_rowwise_sum_and_mean_reduce', lambda : scenario_rowwise_sum_and_mean_reduce(df))
-
         runb('scenario_grouped_a1_statistics', lambda: scenario_grouped_a1_statistics(df))
+        runb('scenario_rowwise_sum_and_mean_reduce', lambda : scenario_rowwise_sum_and_mean_reduce(df))
 
         sys.stdout.flush()
         if sys.platform == 'win32':

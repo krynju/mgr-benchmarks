@@ -18,7 +18,7 @@ unique_values = int(sys.argv[5])
 ncolumns = int(sys.argv[6])
 
 if __name__ == '__main__':
-    with Client(n_workers=workers, threads_per_worker=threads, processes=False) as client:
+    with Client(n_workers=workers, threads_per_worker=threads, processes=True) as client:
 
 
 
@@ -50,12 +50,8 @@ if __name__ == '__main__':
 
         runb('groupby_single_col', lambda : wait(df.shuffle('a1', shuffle='tasks', npartitions=unique_values).persist()))
 
-        gf = df.shuffle('a1', shuffle='disk', npartitions=unique_values).persist()
-        df = None
-        wait(gf)
-
-        runb('grouped_reduce_mean_singlecol', lambda : gf.groupby('a1')['a2'].mean().compute())
-        runb('grouped_reduce_mean_allcols', lambda : gf.groupby('a1').mean().compute())
+        runb('grouped_reduce_mean_singlecol', lambda : df.groupby('a1')['a2'].mean().compute())
+        runb('grouped_reduce_mean_allcols', lambda : df.groupby('a1').mean().compute())
 
         sys.stdout.flush()
         if sys.platform == 'win32':
