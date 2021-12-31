@@ -63,8 +63,8 @@ with time_usage("load df2"):
     df = spark.read.format("csv").options(header='True').schema(schema).load(os.getcwd() + '/data').repartition(npartitions)
     df.count()
 
-runb('count', lambda : df.select(count('a1')).collect())
-runb('count', lambda : df.count())
+# runb('count', lambda : df.select(count('a1')).collect())
+# runb('count', lambda : df.count())
 
 ############## benchmarks
 runb('groupby_single_col', lambda : df.groupBy('a1').count().collect())
