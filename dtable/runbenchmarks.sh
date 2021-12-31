@@ -37,7 +37,7 @@ benchmarkloop() {
             for chunksize in "${chunksizes[@]}"; do
                 runcmd "$juliacmd ${s}dtable_full_scenario_generate_data.jl $n $chunksize $uvc $ncols"
                 runcmd "$juliacmd ${s}dtable_full_scenario_load_benchmark.jl $n $chunksize $uvc $ncols"
-                runcmd "$juliacmd ${s}dtable_full_scenario_ stages_benchmark.jl $n $chunksize $uvc $ncols"
+                runcmd "$juliacmd ${s}dtable_full_scenario_stages_benchmark.jl $n $chunksize $uvc $ncols"
                 rm -r data
             done
         done
