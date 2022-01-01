@@ -18,15 +18,10 @@ max_chunksize = int(sys.argv[4])
 unique_values = int(sys.argv[5])
 ncolumns = int(sys.argv[6])
 
-# workers = 4
-# threads = 4
-# n = int(1e7)
-# max_chunksize = int(1e7)
-# unique_values = int(1e3)
-# ncolumns = int(4)
+pp = workers > 1
 
 if __name__ == '__main__':
-    with Client(n_workers=workers, threads_per_worker=threads, processes=True) as client:
+    with Client(n_workers=workers, threads_per_worker=threads, processes=pp) as client:
 
         tablesize = 4 * ncolumns * n / 1_000_000
         print("@@@ TABLESIZE:       {} MB".format(tablesize))

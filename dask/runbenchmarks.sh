@@ -18,10 +18,6 @@ benchmarkloop() {
                 fi
                 runcmd "python ${s}daskb_groupby.py $w $t $n $chunksize $uvc $ncols"
                 runcmd "python ${s}daskb_join.py $w $t $n $chunksize $uvc $ncols"
-            done
-        done
-        for uvc in "${unique_vals_count[@]}"; do
-            for chunksize in "${chunksizes[@]}"; do
                 runcmd "python ${s}daskb_scenario_generate_data.py $w $t $n $chunksize $uvc $ncols"
                 runcmd "python ${s}daskb_scenario_stages_benchmark.py $w $t $n $chunksize $uvc $ncols"
                 rm -r data
@@ -34,7 +30,8 @@ benchmarkloop() {
 
 # threaded
 workers="1"
-threads=('8' '16')
+# threads=('2' '4' '8' '16')
+threads=('2' '4')
 chunksizes=('10000000' '25000000')
 ns=('10000000' '100000000' '500000000' '1000000000')
 # ns=('1000000000')
@@ -48,32 +45,17 @@ done
 
 # with workers
 # workers=('4' '8' '12')
-workers=('4')
+workers=('4' '8')
 threads="4"
 chunksizes=('10000000')
 ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
 # ns=('10000000' '100000000' '500000000' '1000000000')
 # ns=('10000000')
-unique_vals_count=('1000')
+unique_vals_count=('1000' '10000')
 
 for w in "${workers[@]}"; do
     ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
-    if [ "$workers" == "4" ]; then
-        ns=('2000000000')
-    fi
-    t=$threads
-    benchmarkloop
-done
-
-# workers=('4' '8' '12')
-workers=('4')
-# with workers bigger uvc
-ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
-# ns=('10000000' '100000000' '500000000' '1000000000')
-unique_vals_count=('10000')
-for w in "${workers[@]}"; do
-    ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
-    if [ "$workers" == "4" ]; then
+    if [ "$w" == "4" ]; then
         ns=('2000000000')
     fi
     t=$threads

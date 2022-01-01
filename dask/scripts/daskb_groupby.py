@@ -17,8 +17,10 @@ max_chunksize = int(sys.argv[4])
 unique_values = int(sys.argv[5])
 ncolumns = int(sys.argv[6])
 
+pp = workers > 1
+
 if __name__ == '__main__':
-    with Client(n_workers=workers, threads_per_worker=threads, processes=True) as client:
+    with Client(n_workers=workers, threads_per_worker=threads, processes=pp) as client:
 
 
 

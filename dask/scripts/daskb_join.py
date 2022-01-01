@@ -17,8 +17,10 @@ max_chunksize = int(sys.argv[4])
 unique_values = int(sys.argv[5])
 ncolumns = int(sys.argv[6])
 
+pp = workers > 1
+
 if __name__ == '__main__':
-    with Client(n_workers=workers, threads_per_worker=threads, processes=True) as client:
+    with Client(n_workers=workers, threads_per_worker=threads, processes=pp) as client:
         x = da.random.randint(1, unique_values+1, size=(int(n), ncolumns), chunks=(max_chunksize, ncolumns), dtype=np.int32)
         tablesize = 4 * ncolumns * n / 1_000_000
         print("@@@ TABLESIZE:       {} MB".format(tablesize))
