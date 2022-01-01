@@ -34,7 +34,7 @@ function loopy()
 end
 
 
-threads = [8, 16]
+threads = [2, 4, 8, 16]
 workers = [1]
 ns = Int[1e7, 1e8, 5e8, 1e9]
 chunksizes = Int[1e7, 2.5e7]
@@ -64,6 +64,8 @@ d4 = leftjoin(d3, select(d[d.tech.=="dtable", :], :threads, :workers, :type, :n,
 d4 = leftjoin(d4, select(d[d.tech.=="dask", :], :threads, :workers, :type, :n, :chunksize, :unique_vals, :time => :time_dask), on = [:threads, :workers, :type, :n, :chunksize, :unique_vals])
 d4 = leftjoin(d4, select(d[d.tech.=="spark", :], :threads, :workers, :type, :n, :chunksize, :unique_vals, :time => :time_spark), on = [:threads, :workers, :type, :n, :chunksize, :unique_vals])
 d4[d4.workers .== 1, :time_spark] .= -1
+# d4[(d4.n .== Int(2e9)).&(d4.unique_vals .== 10000).&(startswith.(d4.type, Ref("group"))),:time_dtable] .= -1
+d4[(d4.workers.!=1).&(d4.type.=="innerjoin_r_unique").&(d4.n .== Int(2e9)), :time_dask] .= -1
 
 coverage = combine(d4, [:time_dtable, :time_dask, :time_spark] => ByRow((x, y, z) -> !ismissing(x) + !ismissing(y) + !ismissing(z)))
 coverage_p = combine(coverage, 1 => sum)[1, 1] / 3 / nrow(d4) * 100
@@ -74,3 +76,6 @@ dtable_threaded = combine(combine(d4[d4.workers .== 1,:], :time_dtable => ByRow(
 println("$dtable_threaded dtable threaded done out of $(nrow(d4[d4.workers .== 1,:]))")
 dask_threaded = combine(combine(d4[d4.workers .== 1,:], :time_dask => ByRow((x)->!ismissing(x))), 1=>sum)[1,1]
 println("$dask_threaded dask threaded done out of $(nrow(d4[d4.workers .== 1,:]))")
+
+coverage_gcp = combine(d4[d4.workers .!= 1,:], [:time_dtable, :time_dask, :time_spark] => ByRow((x, y, z) -> !ismissing(x) + !ismissing(y) + !ismissing(z)))
+coverage_gcp_p = combine(coverage_gcp, 1 => sum)[1, 1] / 3 / nrow(d4[d4.workers.!=1,:]) * 100

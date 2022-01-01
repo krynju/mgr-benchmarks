@@ -4,3 +4,4 @@
 dask-worker-space
 *.tar.gz
 *.zip
+*.pdf

@@ -6,8 +6,8 @@ translate_dtable = Dict(
     "reduce_var_all" => "scripts/dtable_basic.jl",
     "reduce_var_single" => "scripts/dtable_basic.jl",
     "groupby_single_col" => "scripts/dtable_groupby.jl",
-    "grouped_reduce_mean_singlecol" => "scripts/dtable_groupby_reduce.jl",
-    "grouped_reduce_mean_allcols" => "scripts/dtable_groupby_reduce.jl",
+    "grouped_reduce_mean_singlecol" => "scripts/dtable_grouped_reduce.jl",
+    "grouped_reduce_mean_allcols" => "scripts/dtable_grouped_reduce.jl",
     "innerjoin_r_unique" => "scripts/dtable_innerjoin_unique.jl",
     "scenario_table_load" => "scripts/dtable_full_scenario_load_benchmark.jl",
     "scenario_full_table_statistics" => "scripts/dtable_full_scenario_stages_benchmark.jl",
@@ -60,3 +60,8 @@ spark = spark[ismissing.(spark.time), :]
 dtable = combine(groupby(dtable, propertynames(dtable)[1:6]), first)
 dask = combine(groupby(dask, propertynames(dask)[1:6]), first)
 spark = combine(groupby(spark, propertynames(spark)[1:6]), first)
+
+
+for r in eachrow(dtable[dtable.workers.!=1,:])
+    println("-p$(r.workers-1) -t$(r.threads) $(r.command) $(r.n) $(r.chunksize) $(r.unique_vals) 4")
+end

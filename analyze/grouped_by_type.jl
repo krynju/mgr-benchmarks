@@ -108,6 +108,7 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
     )
     plot!(p; common_style_kwargs...)
     for (i, k) in enumerate(scenario_ops)
+        (type = k, ) ∉ keys(groupby(gg, :type)) && continue
         g = groupby(gg, :type)[(type = k,)]
         techs = groupby(g, :tech)
         fg = first(g)
