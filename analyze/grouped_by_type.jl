@@ -1,6 +1,7 @@
-DISPLAY_PLOTS = true
+DISPLAY_PLOTS = false
 SAVE_PLOTS = true
-SAVEDIR = "plots2"
+SAVE_PDF = true
+SAVEDIR = "plots_by_type"
 
 using Printf, Plots
 include("load_data.jl")
@@ -48,7 +49,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
     plot!(p, subplot = 1, legend = :topleft)
     plot!(p, plot_title = title, plot_titlefontsize = 10)
     DISPLAY_PLOTS && display(p)
-    @async SAVE_PLOTS && savefig(p, SAVEDIR * "/basic_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
+    SAVE_PDF && savefig(p, SAVEDIR * "/basic_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).pdf")
+    SAVE_PLOTS && savefig(p, SAVEDIR * "/basic_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
 end
 
 
@@ -91,7 +93,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
     plot!(p, subplot = 1, legend = :topleft)
     plot!(p, plot_title = title, plot_titlefontsize = 10)
     DISPLAY_PLOTS && display(p)
-    @async SAVE_PLOTS && savefig(p, SAVEDIR * "/advanced_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
+    SAVE_PDF && savefig(p, SAVEDIR * "/advanced_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).pdf")
+    SAVE_PLOTS && savefig(p, SAVEDIR * "/advanced_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
 end
 
 
@@ -155,5 +158,6 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
     plot!(p, subplot = 1, legend = :topleft)
     plot!(p, plot_title = title, plot_titlefontsize = 10)
     DISPLAY_PLOTS && display(p)
+    SAVE_PDF && savefig(p, SAVEDIR * "/scenario_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).pdf")
     SAVE_PLOTS && savefig(p, SAVEDIR * "/scenario_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
 end

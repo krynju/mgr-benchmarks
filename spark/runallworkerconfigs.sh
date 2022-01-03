@@ -1,4 +1,4 @@
-workers=('8' '12')
+workers=('4' '8')
 
 
 for w in "${workers[@]}"; do

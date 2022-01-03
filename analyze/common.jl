@@ -68,8 +68,42 @@ common_style_kwargs = (
     yscale = :log10,
     xlabel = "n",
     ylabel = "Czas wykonania [s]",
-    labelfontsize = 6,
-    annotationfontsize = 6,
-    legendfontsize = 5,
-    titlefontsize = 6,
+    # dpi=600,
+    tickfontsize=6,
+    annotationfontsize=6,
+    # legendfontsize=5,
+    titlefontsize=6,
+    labelfontsize=6,
+)
+
+leftoverfontsizes=(
+plot_titlefontsize = 10, legendfontsize=6
+)
+
+envsetupsorder=[
+    (1,2),
+    (1,4),
+    (1,8),
+    (1,16),
+    (4,4),
+    (8,4),
+]
+
+envsetupmapping=Dict(
+    (1,2) => "p1, w2",
+    (1,4) => "p1, w4",
+    (1,8) => "p1, w8",
+    (1,16) => "p1, w16",
+    (4,4) => "p4, w4",
+    (8,4) => "p8, w4",
+)
+
+
+envsetupcolormapping = Dict(
+    (1,2) => color_palette[1],
+    (1,4) => color_palette[2],
+    (1,8) => color_palette[3],
+    (1,16) => color_palette[4],
+    (4,4) => color_palette[5],
+    (8,4) => color_palette[6],
 )

@@ -1,13 +1,11 @@
-DISPLAY_PLOTS = false
+DISPLAY_PLOTS = true
 SAVE_PLOTS = true
-SAVEDIR = "plots"
+SAVEDIR = "plots_single_bench"
 
 using Printf, Plots
 include("load_data.jl")
 
 d = load_data()
-
-
 
 sort!(d, [:n, :time])
 d = combine(groupby(d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)

@@ -34,18 +34,10 @@ ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
 unique_vals_count=('1000')
 ncols="4"
 
-if [ "$workers" == "4" ]; then
-    ns=()
-fi
-
 benchmarkloop
 
 
 ns=('10000000' '100000000' '500000000' '1000000000' '2000000000')
 unique_vals_count=('10000')
-
-if [ "$workers" == "4" ]; then
-    ns=('2000000000')
-fi
 
 benchmarkloop
