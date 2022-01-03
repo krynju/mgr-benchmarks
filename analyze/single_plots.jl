@@ -1,6 +1,6 @@
 DISPLAY_PLOTS = true
 SAVE_PLOTS = true
-SAVEDIR = "plots_single_bench"
+SAVEDIR = "plots/plots_single_bench"
 
 using Printf, Plots
 include("load_data.jl")
@@ -30,7 +30,7 @@ function process_group(group)
     for t in techs
         tech = first(t.tech)
         x = t.n
-        y = t.time / 1e9 / 60
+        y = t.time / 1e9
         plot!(
             p, x, y,
             label = tech,

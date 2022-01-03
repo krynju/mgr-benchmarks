@@ -2,7 +2,7 @@ using CSV, DataFrames
 include("common.jl")
 
 function load_data()
-    wdirs = ["dask", "dtable", "spark"]
+    wdirs = ["./"]
 
     function get_result_files(wdir)
         a = readdir(wdir, join=true)

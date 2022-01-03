@@ -105,5 +105,5 @@ envsetupcolormapping = Dict(
     (1,8) => color_palette[3],
     (1,16) => color_palette[4],
     (4,4) => color_palette[5],
-    (8,4) => color_palette[6],
+    (8,4) => color_palette[10],
 )

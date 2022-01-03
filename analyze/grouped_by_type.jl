@@ -1,7 +1,7 @@
 DISPLAY_PLOTS = false
 SAVE_PLOTS = true
 SAVE_PDF = true
-SAVEDIR = "plots_by_type"
+SAVEDIR = "plots/plots_by_type"
 
 using Printf, Plots
 include("load_data.jl")
