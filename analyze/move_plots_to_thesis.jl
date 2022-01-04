@@ -14,6 +14,20 @@ needed_charts =[
     "thr_basic_w=1,t=16,u=1.0E+03.pdf"
     "thr_scenario_w=1,t=16,ch=1.0E+07.pdf"
     "thr_scenario_w=1,t=16,u=1.0E+03.pdf"
+    "advanced_w=8,t=4,ch=1.0E+07,u=1.0E+03.pdf"
+    "basic_w=8,t=4,ch=1.0E+07,u=1.0E+03.pdf"
+    "dask_wor_advanced_ch=1.0E+07,u=1.0E+03.pdf"
+    "dask_wor_basic_ch=1.0E+07,u=1.0E+03.pdf"
+    "dask_wor_scenario_ch=1.0E+07,u=1.0E+03.pdf"
+    "dtable_wor_advanced_ch=1.0E+07,u=1.0E+03.pdf"
+    "dtable_wor_basic_ch=1.0E+07,u=1.0E+03.pdf"
+    "dtable_wor_scenario_ch=1.0E+07,u=1.0E+03.pdf"
+    "scenario_w=8,t=4,ch=1.0E+07,u=1.0E+03.pdf"
+    "spark_wor_advanced_ch=1.0E+07,u=1.0E+03.pdf"
+    "spark_wor_basic_ch=1.0E+07,u=1.0E+03.pdf"
+    "spark_wor_scenario_ch=1.0E+07,u=1.0E+03.pdf"
+    "wor_advanced_w=8,t=4,ch=1.0E+07.pdf"
+    "wor_scenario_w=8,t=4,ch=1.0E+07.pdf"
 ]
 
 allplots = vcat(readdir.(readdir("plots", join=true),join=true)...)
