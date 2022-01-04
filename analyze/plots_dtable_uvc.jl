@@ -1,7 +1,7 @@
 DISPLAY_PLOTS = false
 SAVE_PLOTS = true
 SAVE_PDF = true
-SAVEDIR = "plots/plots_dtable_chunksize/"
+SAVEDIR = "plots/plots_dtable_uvc/"
 
 using Printf, Plots
 include("load_data.jl")
@@ -9,32 +9,33 @@ include("load_data.jl")
 _d = load_data()
 sort!(_d, [:n, :time])
 _d = combine(groupby(_d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
-# _d = _d[_d.tech.=="dtable", :]
+# _d = _d[(_d.tech.=="dtable").|(_d.tech.=="dask"), :]
 sort!(_d, :n)
 mkpath(SAVEDIR)
 
 
 using LaTeXStrings
 
-function filename(group, prefix, f)
-    "$(prefix)_$(group)_w=$(f.workers),t=$(f.threads),u=$(@sprintf("%.1E", f.unique_vals))"
-end
-
-
-groupbycols = [:workers, :threads, :unique_vals]
-innergroupbycols =[ :tech, :chunksize]
-chunksizes = Int[1e7, 2.5e7]
-chunksizes_colors = Dict(
-    Int(1e7) => color_palette[1],
-    Int(2.5e7) => color_palette[2],
+groupbycols = [:workers, :threads, :chunksize]
+innergroupbycols = [:tech, :unique_vals]
+unique_vals = Int[1e3, 1e4]
+unique_vals_colors = Dict(
+    Int(1e3) => color_palette[1],
+    Int(1e4) => color_palette[2],
 )
 
+
+function filename(group, prefix, f)
+    "$(prefix)_$(group)_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize))"
+end
 
 function inner_loop(p, gg, ops, type_mapping)
     plot!(p;
         xscale = :log10,
         yscale = :log10,
+        # size=(640,640),
         common_style_kwargs...
+
     )
     for (i, k) in enumerate(ops)
         g = groupby(gg, :type)[(type = k,)]
@@ -45,11 +46,10 @@ function inner_loop(p, gg, ops, type_mapping)
             subplot = i,
             title = type_mapping[fg.type],
         )
-
-        for (tech, kk) in [(ttt, kkk) for ttt in techs_list for kkk in chunksizes]
-            groupkey = (tech=tech, chunksize=kk,)
-            groupkey ∉ keys(config) && continue
-            t = config[groupkey]
+        for (tech, kk) in [(ttt, kkk) for ttt in techs_list for kkk in unique_vals]
+            (tech=tech, unique_vals=kk,) ∉ keys(config) && continue
+            t = config[(tech=tech, unique_vals=kk,)]
+            # tech = first(t)
             x = t.n
             y = t.time / 1e9
             plot!(
@@ -57,7 +57,7 @@ function inner_loop(p, gg, ops, type_mapping)
                 label = "$tech $kk",
                 # marker = :star,
                 # markercolor = color_mapping[tech],
-                # linecolor = chunksizes_colors[kk],
+                # linecolor = unique_vals_colors[kk],
                 subplot = i,
                 # xticks=(x, [L"%10^{%$(floor(Int, log10(a)))}" for a in x])
             )
@@ -76,22 +76,10 @@ function inner_loop(p, gg, ops, type_mapping)
 end
 
 for (prefix, d) in [
-    # ("all", _d),
-    # ("wor", _d[_d.workers .!= 1, :]),
+    ("all", _d),
+    ("wor", _d[_d.workers .!= 1, :]),
     ("thr", _d[_d.workers .== 1, :]),
 ]
-    dd = d[d.type.∈Ref(basic_ops), :]
-    for gg in groupby(dd, groupbycols)
-        f = first(gg)
-        title = "ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
-        p = plot(layout = length(basic_ops))
-        p = inner_loop(p, gg, basic_ops, basic_type_mapping)
-        plot!(p; plot_title = title, leftoverfontsizes...)
-        DISPLAY_PLOTS && display(p)
-        SAVE_PLOTS && savefig(p, SAVEDIR * filename("basic", prefix, f) * ".png")
-        SAVE_PDF && savefig(p, SAVEDIR * filename("basic", prefix, f) * ".pdf")
-    end
-
     dd = d[d.type.∈Ref(advanced_ops), :]
 
     for gg in groupby(dd, groupbycols)
@@ -101,8 +89,8 @@ for (prefix, d) in [
         p = inner_loop(p, gg, advanced_ops,advanced_type_mapping)
         plot!(p; plot_title = title, leftoverfontsizes...)
         DISPLAY_PLOTS && display(p)
-        SAVE_PDF && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".pdf")
-        SAVE_PLOTS && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".png")
+        SAVE_PDF && savefig(p, SAVEDIR * filename("advanced", prefix, f)* ".pdf")
+        SAVE_PLOTS && savefig(p, SAVEDIR * filename("advanced", prefix, f)* ".png")
     end
 
 
@@ -132,7 +120,7 @@ for (prefix, d) in [
         end
         plot!(p; plot_title = title, leftoverfontsizes...)
         DISPLAY_PLOTS && display(p)
-        SAVE_PDF && savefig(p, SAVEDIR * filename("scenario", prefix, f) * ".pdf")
-        SAVE_PLOTS && savefig(p, SAVEDIR * filename("scenario", prefix, f) * ".png")
+        SAVE_PDF && savefig(p, SAVEDIR * filename("scenario", prefix, f)* ".pdf")
+        SAVE_PLOTS && savefig(p, SAVEDIR * filename("scenario", prefix, f)* ".png")
     end
 end

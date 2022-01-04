@@ -12,6 +12,13 @@ color_mapping = Dict(
     "spark" => color_palette[2]
 )
 
+techs_list = [
+    "dtable" ,
+    "dask" ,
+    "spark" ,
+]
+
+
 basic_ops = [
     "increment_map",
     "filter_half",
