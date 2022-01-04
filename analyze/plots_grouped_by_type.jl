@@ -34,7 +34,7 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
         for t in techs
             tech = first(t.tech)
             x = t.n
-            y = t.time / 1e9
+            y = t.time 
             plot!(
                 p, x, y,
                 label = tech,
@@ -78,7 +78,7 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
         for t in techs
             tech = first(t.tech)
             x = t.n
-            y = t.time ./ 1e9
+            y = t.time 
             plot!(
                 p, x, y,
                 label = tech,
@@ -123,7 +123,7 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
         for t in techs
             tech = first(t.tech)
             x = t.n
-            y = t.time ./ 1e9
+            y = t.time 
             plot!(
                 p, x, y,
                 marker = :star,
@@ -144,7 +144,7 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
         c = combine(groupby(t, :n), :time => sum)
         tech = first(t.tech)
         x = c.n
-        y = c.time_sum ./ 1e9
+        y = c.time_sum 
         plot!(
             p, x, y,
             label = tech,

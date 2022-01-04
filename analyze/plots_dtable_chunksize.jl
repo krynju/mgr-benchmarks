@@ -22,7 +22,7 @@ end
 
 
 groupbycols = [:workers, :threads, :unique_vals]
-innergroupbycols =[ :tech, :chunksize]
+innergroupbycols = [:tech, :chunksize]
 chunksizes = Int[1e7, 2.5e7]
 chunksizes_colors = Dict(
     Int(1e7) => color_palette[1],
@@ -47,11 +47,11 @@ function inner_loop(p, gg, ops, type_mapping)
         )
 
         for (tech, kk) in [(ttt, kkk) for ttt in techs_list for kkk in chunksizes]
-            groupkey = (tech=tech, chunksize=kk,)
+            groupkey = (tech = tech, chunksize = kk,)
             groupkey ∉ keys(config) && continue
             t = config[groupkey]
             x = t.n
-            y = t.time / 1e9
+            y = t.time
             plot!(
                 p, x, y,
                 label = "$tech $kk",
@@ -65,12 +65,12 @@ function inner_loop(p, gg, ops, type_mapping)
     end
     plot!(p, legend = :none)
     plot!(p, subplot = 1, legend = :topleft)
-    plot!(p, xlabel="", ylabel="")
-    for i in [1,1+size(p.layout.grid)[2]]
-        plot!(p, subplot=i, ylabel=common_style_kwargs[5])
+    plot!(p, xlabel = "", ylabel = "")
+    for i in [1, 1 + size(p.layout.grid)[2]]
+        plot!(p, subplot = i, ylabel = common_style_kwargs[5])
     end
     for i in (1+size(p.layout.grid)[2]):(size(p.layout.grid)[2]*size(p.layout.grid)[1])
-        plot!(p, subplot=i, xlabel=common_style_kwargs[4])
+        plot!(p, subplot = i, xlabel = common_style_kwargs[4])
     end
     p
 end
@@ -78,7 +78,7 @@ end
 for (prefix, d) in [
     # ("all", _d),
     # ("wor", _d[_d.workers .!= 1, :]),
-    ("thr", _d[_d.workers .== 1, :]),
+    ("thr", _d[_d.workers.==1, :]),
 ]
     dd = d[d.type.∈Ref(basic_ops), :]
     for gg in groupby(dd, groupbycols)
@@ -98,7 +98,7 @@ for (prefix, d) in [
         f = first(gg)
         title = "ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
         p = plot(layout = length(advanced_ops),)
-        p = inner_loop(p, gg, advanced_ops,advanced_type_mapping)
+        p = inner_loop(p, gg, advanced_ops, advanced_type_mapping)
         plot!(p; plot_title = title, leftoverfontsizes...)
         DISPLAY_PLOTS && display(p)
         SAVE_PDF && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".pdf")
@@ -122,7 +122,7 @@ for (prefix, d) in [
             c = combine(groupby(t, :n), :time => sum)
             tech = first(t)
             x = c.n
-            y = c.time_sum ./ 1e9
+            y = c.time_sum
             plot!(
                 p, x, y,
                 label = "$(tech.workers), $(tech.threads)",

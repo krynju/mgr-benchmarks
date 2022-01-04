@@ -34,9 +34,7 @@ function inner_loop(p, gg, ops, type_mapping)
         xscale = :log10,
         yscale = :log10,
         # size=(640,640),
-        common_style_kwargs...
-
-    )
+        common_style_kwargs...)
     for (i, k) in enumerate(ops)
         g = groupby(gg, :type)[(type = k,)]
         config = groupby(g, innergroupbycols)
@@ -47,11 +45,11 @@ function inner_loop(p, gg, ops, type_mapping)
             title = type_mapping[fg.type],
         )
         for (tech, kk) in [(ttt, kkk) for ttt in techs_list for kkk in unique_vals]
-            (tech=tech, unique_vals=kk,) ∉ keys(config) && continue
-            t = config[(tech=tech, unique_vals=kk,)]
+            (tech = tech, unique_vals = kk,) ∉ keys(config) && continue
+            t = config[(tech = tech, unique_vals = kk,)]
             # tech = first(t)
             x = t.n
-            y = t.time / 1e9
+            y = t.time
             plot!(
                 p, x, y,
                 label = "$tech $kk",
@@ -65,20 +63,20 @@ function inner_loop(p, gg, ops, type_mapping)
     end
     plot!(p, legend = :none)
     plot!(p, subplot = 1, legend = :topleft)
-    plot!(p, xlabel="", ylabel="")
-    for i in [1,1+size(p.layout.grid)[2]]
-        plot!(p, subplot=i, ylabel=common_style_kwargs[5])
+    plot!(p, xlabel = "", ylabel = "")
+    for i in [1, 1 + size(p.layout.grid)[2]]
+        plot!(p, subplot = i, ylabel = common_style_kwargs[5])
     end
     for i in (1+size(p.layout.grid)[2]):(size(p.layout.grid)[2]*size(p.layout.grid)[1])
-        plot!(p, subplot=i, xlabel=common_style_kwargs[4])
+        plot!(p, subplot = i, xlabel = common_style_kwargs[4])
     end
     p
 end
 
 for (prefix, d) in [
     ("all", _d),
-    ("wor", _d[_d.workers .!= 1, :]),
-    ("thr", _d[_d.workers .== 1, :]),
+    ("wor", _d[_d.workers.!=1, :]),
+    ("thr", _d[_d.workers.==1, :]),
 ]
     dd = d[d.type.∈Ref(advanced_ops), :]
 
@@ -86,11 +84,11 @@ for (prefix, d) in [
         f = first(gg)
         title = "ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
         p = plot(layout = length(advanced_ops),)
-        p = inner_loop(p, gg, advanced_ops,advanced_type_mapping)
+        p = inner_loop(p, gg, advanced_ops, advanced_type_mapping)
         plot!(p; plot_title = title, leftoverfontsizes...)
         DISPLAY_PLOTS && display(p)
-        SAVE_PDF && savefig(p, SAVEDIR * filename("advanced", prefix, f)* ".pdf")
-        SAVE_PLOTS && savefig(p, SAVEDIR * filename("advanced", prefix, f)* ".png")
+        SAVE_PDF && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".pdf")
+        SAVE_PLOTS && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".png")
     end
 
 
@@ -110,7 +108,7 @@ for (prefix, d) in [
             c = combine(groupby(t, :n), :time => sum)
             tech = first(t)
             x = c.n
-            y = c.time_sum ./ 1e9
+            y = c.time_sum
             plot!(
                 p, x, y,
                 label = "$(tech.workers), $(tech.threads)",
@@ -120,7 +118,7 @@ for (prefix, d) in [
         end
         plot!(p; plot_title = title, leftoverfontsizes...)
         DISPLAY_PLOTS && display(p)
-        SAVE_PDF && savefig(p, SAVEDIR * filename("scenario", prefix, f)* ".pdf")
-        SAVE_PLOTS && savefig(p, SAVEDIR * filename("scenario", prefix, f)* ".png")
+        SAVE_PDF && savefig(p, SAVEDIR * filename("scenario", prefix, f) * ".pdf")
+        SAVE_PLOTS && savefig(p, SAVEDIR * filename("scenario", prefix, f) * ".png")
     end
 end

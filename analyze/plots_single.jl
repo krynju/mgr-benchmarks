@@ -36,7 +36,7 @@ function process_group(group)
     for t in techs
         tech = first(t.tech)
         x = t.n
-        y = t.time / 1e9
+        y = t.time
         plot!(
             p, x, y,
             label = tech,
@@ -45,10 +45,10 @@ function process_group(group)
             linecolor = color_mapping[tech]
         )
     end
-    plot!(p, plot_title=title, plot_titlefontsize=10)
+    plot!(p, plot_title = title, plot_titlefontsize = 10)
     DISPLAY_PLOTS && display(p)
-    SAVE_PLOTS && savefig(p, SAVEDIR * filename(f)* ".png")
-    SAVE_PDF && savefig(p, SAVEDIR * filename(f)* ".pdf")
+    SAVE_PLOTS && savefig(p, SAVEDIR * filename(f) * ".png")
+    SAVE_PDF && savefig(p, SAVEDIR * filename(f) * ".pdf")
 end
 
 for gg in g

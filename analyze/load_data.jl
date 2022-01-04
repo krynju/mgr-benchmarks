@@ -13,6 +13,7 @@ function load_data()
     result_files = vcat(get_result_files.(wdirs)...)
     d = CSV.read(result_files, DataFrame, pool=false)
     dropmissing!(d)
+    d.time = d.time ./ 1e9
     d = d[d.chunksize .!= 1_000_000, :]
     d = d[d.n .!= 1_000_000, :]
     d = d[d.type .!= "count", :]

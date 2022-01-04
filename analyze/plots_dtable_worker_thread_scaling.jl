@@ -18,11 +18,11 @@ function filename(tech, group, prefix, f)
 end
 
 
-groupbycols  = [:chunksize, :unique_vals]
+groupbycols = [:chunksize, :unique_vals]
 innergroupbycols = [:tech, :workers, :threads]
 using LaTeXStrings
 
-function inner_loop(p, gg, ops,type_mapping)
+function inner_loop(p, gg, ops, type_mapping)
     plot!(p;
         xscale = :log10,
         yscale = :log10,
@@ -37,18 +37,18 @@ function inner_loop(p, gg, ops,type_mapping)
             subplot = i,
             title = type_mapping[fg.type],
         )
-        for (tech, workers , threads) in  [(ttt,www, kkk) for ttt in combine(gg, :tech => unique)[:,1] for www in [1,4,8] for kkk in [2,4,8,16]]
-            groupkey = (tech = tech , workers = workers, threads = threads)
+        for (tech, workers, threads) in [(ttt, www, kkk) for ttt in combine(gg, :tech => unique)[:, 1] for www in [1, 4, 8] for kkk in [2, 4, 8, 16]]
+            groupkey = (tech = tech, workers = workers, threads = threads)
             groupkey ∉ keys(config) && continue
             t = config[groupkey]
             x = t.n
-            y = t.time / 1e9
+            y = t.time
             plot!(
                 p, x, y,
-                label = envsetupmapping[(workers,threads)],
+                label = envsetupmapping[(workers, threads)],
                 # marker = :star,
                 # markercolor = color_mapping[tech],
-                linecolor = envsetupcolormapping[(workers,threads)],
+                linecolor = envsetupcolormapping[(workers, threads)],
                 subplot = i,
                 # xticks=(x, [L"%10^{%$(floor(Int, log10(a)))}" for a in x])
             )
@@ -69,7 +69,7 @@ end
 
 for _tech in techs_list
 
-    d2 = _d[_d.tech .== _tech, :]
+    d2 = _d[_d.tech.==_tech, :]
     for (prefix, d) in [
         ("all", d2),
         ("wor", d2[d2.workers.!=1, :]),
@@ -93,7 +93,7 @@ for _tech in techs_list
             f = first(gg)
             title = "ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
             p = plot(layout = length(advanced_ops),)
-            p = inner_loop(p, gg, advanced_ops,advanced_type_mapping)
+            p = inner_loop(p, gg, advanced_ops, advanced_type_mapping)
             plot!(p; plot_title = title, leftoverfontsizes...)
             DISPLAY_PLOTS && display(p)
             SAVE_PDF && savefig(p, SAVEDIR * filename(_tech, "advanced", prefix, f) * ".pdf")
@@ -118,7 +118,7 @@ for _tech in techs_list
                 c = combine(groupby(t, :n), :time => sum)
                 tech = first(t)
                 x = c.n
-                y = c.time_sum ./ 1e9
+                y = c.time_sum
                 plot!(
                     p, x, y,
                     label = "$(tech.workers), $(tech.threads)",
