@@ -51,6 +51,7 @@ function inner_loop(p, gg, ops, type_mapping)
                 linecolor = envsetupcolormapping[(workers, threads)],
                 subplot = i,
                 # xticks=(x, [L"%10^{%$(floor(Int, log10(a)))}" for a in x])
+                xticks=(x, ["0.16", "1.6", "8", "16", "32"])
             )
         end
     end

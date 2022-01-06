@@ -2,7 +2,7 @@ using CSV, DataFrames
 include("common.jl")
 
 function load_data()
-    wdirs = ["./"]
+    wdirs = ["./", "dtable", "dask"]
 
     function get_result_files(wdir)
         a = readdir(wdir, join=true)
@@ -21,4 +21,5 @@ function load_data()
     d = d[d.workers .!= 2, :]
     d = d[.!((d.workers .== 4).&(d.chunksize .== 25000000)), :]
     d = d[.!((d.type .∈ Ref(basic_types)).&(d.unique_vals .== 10000)),: ]
+    d = combine(groupby(d, [:threads, :workers, :type, :n, :chunksize, :unique_vals, :tech]), :time => minimum => :time)
 end

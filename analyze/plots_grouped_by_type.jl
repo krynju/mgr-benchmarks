@@ -141,10 +141,10 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
         title = "total",
     )
     for t in techs
-        c = combine(groupby(t, :n), :time => sum)
+        ccc = combine(groupby(t, :n), :time => sum)
         tech = first(t.tech)
-        x = c.n
-        y = c.time_sum 
+        x = ccc.n
+        y = ccc.time_sum 
         plot!(
             p, x, y,
             label = tech,
