@@ -20,6 +20,14 @@ function filename(group, prefix, f)
 end
 
 
+chunksizenames = Dict(
+    10000000 => L"1.0\times10^{7}",
+    25000000 => L"2.5\times10^{7}",
+)
+
+
+
+
 groupbycols = [:workers, :threads, :unique_vals]
 innergroupbycols = [:tech, :chunksize]
 chunksizes = Int[1e7, 2.5e7]
@@ -28,13 +36,16 @@ chunksizes_colors = Dict(
     Int(2.5e7) => color_palette[2],
 )
 
+allseries = [(ttt, kkk) for ttt in techs_list for kkk in chunksizes]
+function getmarker(k)
+    custom_markers[indexin(Ref(k), allseries)[1]]
+end
 
-function inner_loop(p, gg, ops, type_mapping)
-    plot!(p;
-        xscale = :log10,
-        yscale = :log10,
-        common_style_kwargs...
-    )
+
+function inner_loop(p, gg, ops)
+    plot!(p;common_style_kwargs...)
+    plot!(p;common_style_kwargs2...)
+
     for (i, k) in enumerate(ops)
         g = groupby(gg, :type)[(type = k,)]
         config = groupby(g, innergroupbycols)
@@ -42,10 +53,10 @@ function inner_loop(p, gg, ops, type_mapping)
         plot!(
             p,
             subplot = i,
-            title = type_mapping[fg.type],
+            title = OPS_NAME_MAPPING[fg.type],
         )
 
-        for (tech, kk) in [(ttt, kkk) for ttt in techs_list for kkk in chunksizes]
+        for (tech, kk) in allseries
             groupkey = (tech = tech, chunksize = kk,)
             groupkey ∉ keys(config) && continue
             t = config[groupkey]
@@ -53,25 +64,19 @@ function inner_loop(p, gg, ops, type_mapping)
             y = t.time
             plot!(
                 p, x, y,
-                label = "$tech $kk",
                 # marker = :star,
                 # markercolor = color_mapping[tech],
                 # linecolor = chunksizes_colors[kk],
+                label = chunksizenames[kk] * " $(techs_name_mapping[tech])",
+                # xticks=(x, [ for a in x])
+                marker=getmarker((tech, kk)),
                 subplot = i,
-                xticks=(x, ["0.16", "1.6", "8", "16", "32"]),
-                # xticks=(x, [L"%10^{%$(floor(Int, log10(a)))}" for a in x])
+                xticks=(x, xtickslabels),
+                ; markerargs...
             )
         end
     end
-    plot!(p, legend = :none)
-    plot!(p, subplot = 1, legend = :topleft)
-    plot!(p, xlabel = "", ylabel = "")
-    for i in [1, 1 + size(p.layout.grid)[2]]
-        plot!(p, subplot = i, ylabel = common_style_kwargs[5])
-    end
-    for i in (1+size(p.layout.grid)[2]):(size(p.layout.grid)[2]*size(p.layout.grid)[1])
-        plot!(p, subplot = i, xlabel = common_style_kwargs[4])
-    end
+    p=populate_labels(p)
     p
 end
 
@@ -85,8 +90,8 @@ for (prefix, d) in [
         f = first(gg)
         title = "ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
         p = plot(layout = length(basic_ops))
-        p = inner_loop(p, gg, basic_ops, basic_type_mapping)
-        plot!(p; plot_title = title, leftoverfontsizes...)
+        p = inner_loop(p, gg, basic_ops)
+        p = epi(p, title)
         DISPLAY_PLOTS && display(p)
         SAVE_PLOTS && savefig(p, SAVEDIR * filename("basic", prefix, f) * ".png")
         SAVE_PDF && savefig(p, SAVEDIR * filename("basic", prefix, f) * ".pdf")
@@ -98,8 +103,8 @@ for (prefix, d) in [
         f = first(gg)
         title = "ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
         p = plot(layout = length(advanced_ops),)
-        p = inner_loop(p, gg, advanced_ops, advanced_type_mapping)
-        plot!(p; plot_title = title, leftoverfontsizes...)
+        p = inner_loop(p, gg, advanced_ops)
+        p = epi(p, title)
         DISPLAY_PLOTS && display(p)
         SAVE_PDF && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".pdf")
         SAVE_PLOTS && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".png")
@@ -111,27 +116,30 @@ for (prefix, d) in [
         f = first(gg)
         title = "ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
         p = plot(layout = length(scenario_ops) + 1,)
-        p = inner_loop(p, gg, scenario_ops, scenario_type_mapping)
-        techs = groupby(gg, innergroupbycols)
+        p = inner_loop(p, gg, scenario_ops)
+        config = groupby(gg, innergroupbycols)
         plot!(
             p,
             subplot = 6,
-            title = "total",
+            title = OPS_NAME_MAPPING["total"],
         )
-        for t in techs
+        for (tech, kk) in allseries
+            groupkey = (tech = tech, chunksize = kk,)
+            groupkey ∉ keys(config) && continue
+            t = config[groupkey]
             c = combine(groupby(t, :n), :time => sum)
-            tech = first(t)
             x = c.n
             y = c.time_sum
             plot!(
                 p, x, y,
-                label = "$(tech.workers), $(tech.threads)",
-                # linecolor = color_mapping[tech],
+                # label = chunksizenames[kk] * " $(techs_name_mapping[tech])",
+                marker=getmarker((tech, kk)),
                 subplot = 6,
-                xticks=(x, ["0.16", "1.6", "8", "16", "32"]),
+                xticks=(x, xtickslabels),
+                ; markerargs...
             )
         end
-        plot!(p; plot_title = title, leftoverfontsizes...)
+        p = epi(p, title)
         DISPLAY_PLOTS && display(p)
         SAVE_PDF && savefig(p, SAVEDIR * filename("scenario", prefix, f) * ".pdf")
         SAVE_PLOTS && savefig(p, SAVEDIR * filename("scenario", prefix, f) * ".png")

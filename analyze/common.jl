@@ -13,10 +13,23 @@ color_mapping = Dict(
 )
 
 techs_list = [
-    "dtable" ,
-    "dask" ,
-    "spark" ,
+    "dtable",
+    "dask",
+    "spark",
 ]
+
+
+techs_marker_mapping = Dict(
+    "dtable" => :star,
+    "dask" => :circle,
+    "spark" => :diamond,
+)
+
+techs_name_mapping = Dict(
+    "dtable" => "DTable",
+    "dask" => "Dask",
+    "spark" => "PySpark",
+)
 
 
 basic_ops = [
@@ -33,25 +46,13 @@ color_mapping = Dict(
     "spark" => color_palette[2]
 )
 
-basic_type_mapping = Dict(
-    "increment_map" => "map",
-    "filter_half" => "filter",
-    "reduce_var_single" => "reduce (1 kolumna)",
-    "reduce_var_all" => "reduce (4 kolumny)",
-)
-
 advanced_ops = [
     "groupby_single_col",
     "innerjoin_r_unique",
     "grouped_reduce_mean_singlecol",
     "grouped_reduce_mean_allcols"
 ]
-advanced_type_mapping = Dict(
-    "groupby_single_col" => "shuffle",
-    "innerjoin_r_unique" => "inner join",
-    "grouped_reduce_mean_singlecol" => "grouped reduce (1 kolumna)",
-    "grouped_reduce_mean_allcols" => "grouped reduce (4 kolumny)",
-)
+
 
 scenario_ops = [
     "scenario_table_load",
@@ -60,57 +61,103 @@ scenario_ops = [
     "scenario_rowwise_sum_and_mean_reduce",
     "scenario_grouped_a1_statistics"
 ]
-scenario_type_mapping = Dict(
-    "scenario_table_load" => "load",
-    "scenario_full_table_statistics" => "basic stats",
-    "scenario_count_unique_a1" => "count unique",
-    "scenario_rowwise_sum_and_mean_reduce" => "rowwise",
-    "scenario_grouped_a1_statistics" => "grouped stats",
-)
+
 
 
 common_style_kwargs = (
     fontfamily = "Computer Modern",
     xscale = :log10,
     yscale = :log10,
-    xlabel = "n",
+    xlabel = "Rozmiar tabeli [GB]",
     ylabel = "Czas wykonania [s]",
-    # dpi=600,
-    tickfontsize=6,
-    annotationfontsize=6,
-    # legendfontsize=5,
-    titlefontsize=6,
-    labelfontsize=6,
+    tickfontsize = 6,
+    annotationfontsize = 6,
+    titlefontsize = 8,
+    labelfontsize = 6,
+
+)
+common_style_kwargs2=(
+    link = :both,
 )
 
-leftoverfontsizes=(
-plot_titlefontsize = 10, legendfontsize=6
+leftoverfontsizes = (
+    plot_titlefontsize = 10, legendfontsize = 5
 )
 
-envsetupsorder=[
-    (1,2),
-    (1,4),
-    (1,8),
-    (1,16),
-    (4,4),
-    (8,4),
+envsetupsorder = [
+    (1, 2),
+    (1, 4),
+    (1, 8),
+    (1, 16),
+    (4, 4),
+    (8, 4),
 ]
 
-envsetupmapping=Dict(
-    (1,2) => "2 w.",
-    (1,4) => "4 w.",
-    (1,8) => "8 w.",
-    (1,16) => "16 w.",
-    (4,4) => "4 p.; 4 w.",
-    (8,4) => "8 p.; 4 w.",
+envsetupmapping = Dict(
+    (1, 2) => "2 w.",
+    (1, 4) => "4 w.",
+    (1, 8) => "8 w.",
+    (1, 16) => "16 w.",
+    (4, 4) => "4 p.; 4 w.",
+    (8, 4) => "8 p.; 4 w.",
 )
 
 
 envsetupcolormapping = Dict(
-    (1,2) => color_palette[1],
-    (1,4) => color_palette[2],
-    (1,8) => color_palette[3],
-    (1,16) => color_palette[4],
-    (4,4) => color_palette[5],
-    (8,4) => color_palette[10],
+    (1, 2) => color_palette[1],
+    (1, 4) => color_palette[2],
+    (1, 8) => color_palette[3],
+    (1, 16) => color_palette[4],
+    (4, 4) => color_palette[5],
+    (8, 4) => color_palette[10],
 )
+
+
+markerargs = (
+    markersize = 3,
+    markerstrokewidth = 0.5,
+)
+
+xtickslabels=["0.16", "1.6", "8", "16", "32"]
+
+OPS_NAME_MAPPING = Dict(
+    "increment_map" => "Mapowanie",
+    "filter_half" => "Filtrowanie",
+    "reduce_var_single" => "Redukcja (1 kolumna)",
+    "reduce_var_all" => "Redukcja (4 kolumny)",
+    "groupby_single_col" => "Redystrybucja",
+    "innerjoin_r_unique" => "Łączenie",
+    "grouped_reduce_mean_singlecol" => "Grupowa redukcja (1 kolumna)",
+    "grouped_reduce_mean_allcols" => "Grupowa redukcja (4 kolumny)",
+    "scenario_table_load" => "Ładowanie z dysku",
+    "scenario_full_table_statistics" => "Statystyki pełne",
+    "scenario_count_unique_a1" => "Zliczanie unikalnych wartości",
+    "scenario_rowwise_sum_and_mean_reduce" => "Suma rzędu i redukcja",
+    "scenario_grouped_a1_statistics" => "Statystyki grupowe",
+    "total" => "Czas całkowity"
+)
+
+function populate_labels(p)
+    plot!(p, xlabel = "", ylabel = "")
+    for i in [1, 1 + size(p.layout.grid)[2]]
+        plot!(p, subplot = i, ylabel = common_style_kwargs[:ylabel])
+    end
+    for i in (1+size(p.layout.grid)[2]):(size(p.layout.grid)[2]*size(p.layout.grid)[1])
+        plot!(p, subplot = i, xlabel = common_style_kwargs[:xlabel])
+    end
+    p
+end
+
+
+custom_markers=[
+    :circle, :rtriangle, 
+    :diamond, :hexagon, 
+    :utriangle, :star5, :ltriangle, :pentagon, :heptagon, :octagon, :star4, :star6, :star7, :star8, :vline, :hline, :+, :x
+]
+
+function epi(p, title)
+    plot!(p, legend = :none)
+    plot!(p, subplot = 1, legend = :topleft)
+    # plot!(p; plot_title = title, leftoverfontsizes...)
+    plot!(p; leftoverfontsizes...)
+end
