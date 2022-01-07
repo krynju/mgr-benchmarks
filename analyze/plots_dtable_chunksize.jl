@@ -8,7 +8,6 @@ include("load_data.jl")
 
 _d = load_data()
 sort!(_d, [:n, :time])
-_d = combine(groupby(_d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
 # _d = _d[_d.tech.=="dtable", :]
 sort!(_d, :n)
 mkpath(SAVEDIR)
@@ -59,6 +58,7 @@ function inner_loop(p, gg, ops, type_mapping)
                 # markercolor = color_mapping[tech],
                 # linecolor = chunksizes_colors[kk],
                 subplot = i,
+                xticks=(x, ["0.16", "1.6", "8", "16", "32"]),
                 # xticks=(x, [L"%10^{%$(floor(Int, log10(a)))}" for a in x])
             )
         end
@@ -127,7 +127,8 @@ for (prefix, d) in [
                 p, x, y,
                 label = "$(tech.workers), $(tech.threads)",
                 # linecolor = color_mapping[tech],
-                subplot = 6
+                subplot = 6,
+                xticks=(x, ["0.16", "1.6", "8", "16", "32"]),
             )
         end
         plot!(p; plot_title = title, leftoverfontsizes...)

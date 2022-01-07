@@ -8,9 +8,6 @@ include("load_data.jl")
 
 _d = load_data()
 sort!(_d, [:n, :time])
-_d = combine(groupby(_d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
-# _d = _d[_d.tech.=="dtable", :]
-sort!(_d, :n)
 mkpath(SAVEDIR)
 
 function filename(tech, group, prefix, f)
@@ -124,7 +121,8 @@ for _tech in techs_list
                     p, x, y,
                     label = "$(tech.workers), $(tech.threads)",
                     linecolor = envsetupcolormapping[(tech.workers, tech.threads)],
-                    subplot = 6
+                    subplot = 6,
+                    xticks=(x, ["0.16", "1.6", "8", "16", "32"])
                 )
             end
             plot!(p; plot_title = title, leftoverfontsizes...)

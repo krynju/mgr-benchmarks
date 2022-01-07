@@ -7,10 +7,7 @@ using Printf, Plots
 include("load_data.jl")
 
 d = load_data()
-
-
 sort!(d, [:n, :time])
-d = combine(groupby(d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
 g = groupby(d, [:type, :chunksize, :unique_vals, :workers, :threads])
 
 benchmarks = combine(d, :type => unique)

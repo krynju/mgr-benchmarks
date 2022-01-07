@@ -9,7 +9,6 @@ c = combine(g,
     :tech => (x -> "dask" in x) => :dask,
     :tech => (x -> "spark" in x) => :spark,
 )
-d = combine(groupby(d, [:threads, :workers, :type, :n, :chunksize, :unique_vals, :tech]), :time => minimum => :time)
 configs = []
 
 type = ["increment_map", "filter_half", "reduce_var_all", "reduce_var_single", "groupby_single_col", "grouped_reduce_mean_singlecol",

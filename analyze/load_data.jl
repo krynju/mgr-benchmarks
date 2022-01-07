@@ -21,5 +21,5 @@ function load_data()
     d = d[d.workers .!= 2, :]
     d = d[.!((d.workers .== 4).&(d.chunksize .== 25000000)), :]
     d = d[.!((d.type .∈ Ref(basic_types)).&(d.unique_vals .== 10000)),: ]
-    d = combine(groupby(d, [:threads, :workers, :type, :n, :chunksize, :unique_vals, :tech]), :time => minimum => :time)
+    d = combine(groupby(d, [:tech, :type, :n, :chunksize, :unique_vals, :ncolumns, :workers, :threads]), :time => minimum => :time)
 end

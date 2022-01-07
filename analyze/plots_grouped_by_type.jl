@@ -8,8 +8,6 @@ include("load_data.jl")
 
 d = load_data()
 sort!(d, [:n, :time])
-d = combine(groupby(d, [:tech, :type, :chunksize, :n, :unique_vals, :workers, :threads]), first)
-sort!(d, :n)
 mkpath(SAVEDIR)
 
 dd = d[d.type.∈Ref(basic_ops), :]
@@ -41,7 +39,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
                 marker = :star,
                 markercolor = color_mapping[tech],
                 linecolor = color_mapping[tech],
-                subplot = i
+                subplot = i,
+                xticks=(x, ["0.16", "1.6", "8", "16", "32"]),
             )
         end
     end
@@ -85,7 +84,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
                 marker = :star,
                 markercolor = color_mapping[tech],
                 linecolor = color_mapping[tech],
-                subplot = i
+                subplot = i,
+                xticks=(x, ["0.16", "1.6", "8", "16", "32"]),
             )
         end
     end
@@ -130,7 +130,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
                 markercolor = color_mapping[tech],
                 label = tech,
                 linecolor = color_mapping[tech],
-                subplot = i
+                subplot = i,
+                xticks=(x, ["0.16", "1.6", "8", "16", "32"]),
             )
         end
     end
@@ -151,7 +152,8 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
             marker = :star,
             markercolor = color_mapping[tech],
             linecolor = color_mapping[tech],
-            subplot = 6
+            subplot = 6,
+            xticks=(x, ["0.16", "1.6", "8", "16", "32"]),
         )
     end
     plot!(p, legend = :none)
