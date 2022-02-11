@@ -82,13 +82,17 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
     title = "w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))"
     p = plot(layout = length(scenario_ops) + 1)
     p = inner_loop(p, gg, scenario_ops)
-    techs = groupby(gg, :tech)
+
     plot!(
         p,
         subplot = 6,
         title = OPS_NAME_MAPPING["total"],
     )
-    for t in techs
+    config = groupby(gg, :tech)
+    for _t in techs_list
+        groupingkey = (tech = _t,)
+        groupingkey ∉ keys(config) && continue
+        t = config[groupingkey]
         ccc = combine(groupby(t, :n), :time => sum)
         tech = first(t.tech)
         x = ccc.n
