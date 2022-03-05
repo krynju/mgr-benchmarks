@@ -78,9 +78,7 @@ for (prefix, d) in [
         p = plot(layout = length(advanced_ops),)
         p = inner_loop(p, gg, advanced_ops)
         p = epi(p, title)
-        DISPLAY_PLOTS && display(p)
-        SAVE_PDF && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".pdf")
-        SAVE_PLOTS && savefig(p, SAVEDIR * filename("advanced", prefix, f) * ".png")
+        saveplot(p, SAVEDIR, filename("advanced", prefix, f))
     end
 
 
@@ -113,8 +111,6 @@ for (prefix, d) in [
             )
         end
         p = epi(p, title)
-        DISPLAY_PLOTS && display(p)
-        SAVE_PDF && savefig(p, SAVEDIR * filename("scenario", prefix, f) * ".pdf")
-        SAVE_PLOTS && savefig(p, SAVEDIR * filename("scenario", prefix, f) * ".png")
+        saveplot(p, SAVEDIR, filename("scenario", prefix, f))
     end
 end

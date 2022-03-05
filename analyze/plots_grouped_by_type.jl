@@ -54,9 +54,7 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
     p = plot(layout = length(basic_ops))
     p = inner_loop(p, gg, basic_ops)
     p = epi(p, title)
-    DISPLAY_PLOTS && display(p)
-    SAVE_PDF && savefig(p, SAVEDIR * "/basic_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).pdf")
-    SAVE_PLOTS && savefig(p, SAVEDIR * "/basic_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
+    saveplot(p, SAVEDIR, "/basic_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))")
 end
 
 
@@ -69,9 +67,7 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
     p = plot(layout = length(advanced_ops))
     p = inner_loop(p, gg, advanced_ops)
     p = epi(p, title)
-    DISPLAY_PLOTS && display(p)
-    SAVE_PDF && savefig(p, SAVEDIR * "/advanced_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).pdf")
-    SAVE_PLOTS && savefig(p, SAVEDIR * "/advanced_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
+    saveplot(p, SAVEDIR, "/advanced_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))")
 end
 
 
@@ -109,7 +105,5 @@ for gg in groupby(dd, [:chunksize, :unique_vals, :workers, :threads])
         )
     end
     p = epi(p, title)
-    DISPLAY_PLOTS && display(p)
-    SAVE_PDF && savefig(p, SAVEDIR * "/scenario_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).pdf")
-    SAVE_PLOTS && savefig(p, SAVEDIR * "/scenario_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals)).png")
+    saveplot(p, SAVEDIR, "/scenario_w=$(f.workers),t=$(f.threads),ch=$(@sprintf("%.1E", f.chunksize)),u=$(@sprintf("%.1E", f.unique_vals))")
 end

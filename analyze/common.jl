@@ -182,3 +182,11 @@ function epi(p, title)
     # plot!(p; plot_title = title, leftoverfontsizes...)
     plot!(p; leftoverfontsizes...)
 end
+
+
+function saveplot(p, SAVEDIR, fname)
+    DISPLAY_PLOTS && display(p)
+    SAVE_PDF && savefig(p, SAVEDIR * fname * ".pdf")
+    plot!(p, dpi=600)
+    SAVE_PLOTS && savefig(p, SAVEDIR * fname * ".png")
+end

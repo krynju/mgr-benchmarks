@@ -43,9 +43,7 @@ function process_group(group)
         )
     end
     plot!(p, plot_title = title, plot_titlefontsize = 10)
-    DISPLAY_PLOTS && display(p)
-    SAVE_PLOTS && savefig(p, SAVEDIR * filename(f) * ".png")
-    SAVE_PDF && savefig(p, SAVEDIR * filename(f) * ".pdf")
+    saveplot(p, SAVEDIR,  filename(f))
 end
 
 for gg in g

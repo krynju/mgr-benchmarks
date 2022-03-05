@@ -74,9 +74,7 @@ for _tech in techs_list
             p = plot(layout = length(basic_ops))
             p = inner_loop(p, gg, basic_ops)
             p = epi(p, title)
-            DISPLAY_PLOTS && display(p)
-            SAVE_PLOTS && savefig(p, SAVEDIR * filename(_tech, "basic", prefix, f) * ".png")
-            SAVE_PDF && savefig(p, SAVEDIR * filename(_tech, "basic", prefix, f) * ".pdf")
+            saveplot(p, SAVEDIR, filename(_tech, "basic", prefix, f))
         end
 
         dd = d[d.type.∈Ref(advanced_ops), :]
@@ -86,9 +84,7 @@ for _tech in techs_list
             p = plot(layout = length(advanced_ops),)
             p = inner_loop(p, gg, advanced_ops)
             p = epi(p, title)
-            DISPLAY_PLOTS && display(p)
-            SAVE_PDF && savefig(p, SAVEDIR * filename(_tech, "advanced", prefix, f) * ".pdf")
-            SAVE_PLOTS && savefig(p, SAVEDIR * filename(_tech, "advanced", prefix, f) * ".png")
+            saveplot(p, SAVEDIR, filename(_tech, "advanced", prefix, f))
         end
 
 
@@ -123,9 +119,7 @@ for _tech in techs_list
                 )
             end
             p = epi(p, title)
-            DISPLAY_PLOTS && display(p)
-            SAVE_PDF && savefig(p, SAVEDIR * filename(_tech, "scenario", prefix, f) * ".pdf")
-            SAVE_PLOTS && savefig(p, SAVEDIR * filename(_tech, "scenario", prefix, f) * ".png")
+            saveplot(p, SAVEDIR, filename(_tech, "scenario", prefix, f))
         end
     end
 end

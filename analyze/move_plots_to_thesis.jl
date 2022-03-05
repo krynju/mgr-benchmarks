@@ -32,12 +32,24 @@ needed_charts = [
     "wor_advanced_w=8,t=4,ch=1.0E+07.pdf"
     "wor_scenario_w=8,t=4,ch=1.0E+07.pdf"
 ]
+
+needed_charts_png = map(x-> replace(x, ".pdf" =>".png"), needed_charts)
+
 allplots = vcat(readdir.(readdir("plots", join = true), join = true)...)
 
 chartdir = "charts"
 mkpath(chartdir)
 
 for n in needed_charts
+    idxs = findall(x -> occursin(n, x), allplots)
+    @assert length(idxs) == 1
+    cp(allplots[idxs[1]], joinpath(chartdir, n), force = true)
+end
+
+chartdir = "charts_png"
+mkpath(chartdir)
+
+for n in needed_charts_png
     idxs = findall(x -> occursin(n, x), allplots)
     @assert length(idxs) == 1
     cp(allplots[idxs[1]], joinpath(chartdir, n), force = true)
