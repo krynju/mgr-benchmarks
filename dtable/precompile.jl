@@ -9,7 +9,7 @@ i = IOBuffer()
 CSV.write(i, d)
 o = CSV.read(take!(i), DataFrame)
 
-dt = DTable(d, 10, tabletype=NamedTuple)
+dt = DTables.DTable(d, 10, tabletype=NamedTuple)
 fetch(map(x->(r=x.a+x.b,), dt))
 fetch(filter(x->x.a>5, dt))
 fetch(reduce(fit!, dt, cols=[:a], init=Variance()))
