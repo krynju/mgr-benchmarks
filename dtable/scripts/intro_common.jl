@@ -35,7 +35,7 @@ _gc = () -> begin
     end
 end
 
-w_test = (type, f, arg; s=2, prefix="dtable", second_arg=nothing) -> begin
+w_test = (type, f, arg; s=2, prefix="dtable_new", second_arg=nothing) -> begin
     _gc()
     println("@@@ STARTED:         $type : $(now())")
     b = run_bench(f, arg, second_arg, s)
@@ -60,5 +60,3 @@ end
 nchunks = (n+max_chunksize-1) ÷ max_chunksize
 
 genchunk = (rng) -> (;[Symbol("a$i") => rand(rng, Int32(1):Int32(unique_values), n÷nchunks) for i in 1:ncolumns]...)
-
-

@@ -2,6 +2,7 @@ using Distributed
 @everywhere using Pkg;
 @everywhere Pkg.activate(".")
 @everywhere using Dagger
+@everywhere using DTables
 
 include("intro_common.jl")
 include("generate_dtable.jl")

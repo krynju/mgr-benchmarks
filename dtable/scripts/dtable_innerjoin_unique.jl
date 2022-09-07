@@ -2,6 +2,7 @@ using Distributed
 @everywhere using Pkg;
 @everywhere Pkg.activate(".");
 @everywhere using Dagger
+@everywhere using DTables
 
 include("intro_common.jl")
 include("generate_dtable.jl")
@@ -9,7 +10,7 @@ include("generate_dtable.jl")
 d2 = DTable((a1=Int32.(1:unique_values), a5=.-Int32.(1:unique_values)), Int(unique_values))
 
 groupby_single_col = (d, d2) -> begin
-    j = Dagger.innerjoin(d, d2, on=:a1, r_unique=true)
+    j = DTables.innerjoin(d, d2, on=:a1, r_unique=true)
     wait.(j.chunks)
     nothing
 end

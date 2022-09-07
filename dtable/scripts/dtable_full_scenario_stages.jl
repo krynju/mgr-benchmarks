@@ -49,7 +49,7 @@ end
 # rowwise sum and reduce
 
 function scenario_rowwise_sum_and_mean_reduce(d)
-    m = fetch(Dagger.mapreduce(sum, fit!, d, init = Mean()))
+    m = fetch(DTables.mapreduce(sum, fit!, d, init = Mean()))
     r = m.μ
 end
 
@@ -59,7 +59,7 @@ function scenario_grouped_a1_statistics(d)
     gb = GroupBy(Int32, g)
     f = r -> (r.a1, tuple(r...))
     f((a1 = 1, a2 = 2, a3 = 3, a4 = 4))
-    r = fetch(Dagger.mapreduce(f, fit!, d, init = gb))
+    r = fetch(DTables.mapreduce(f, fit!, d, init = gb))
 
     # d = Dagger.groupby(d, :a1)
     # r = fetch(reduce(fit!, d, cols = [:a2, :a3, :a4], init = Series(Mean(), Variance(), Extrema())))

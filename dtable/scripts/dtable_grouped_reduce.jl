@@ -2,6 +2,7 @@ using Distributed
 @everywhere using Pkg;
 @everywhere Pkg.activate(".");
 @everywhere using Dagger
+@everywhere using DTables
 
 include("intro_common.jl")
 include("generate_dtable.jl")
@@ -9,7 +10,7 @@ include("generate_dtable.jl")
 ################
 # grouped prep
 _gc()
-d = Dagger.groupby(d, :a1)
+d = DTables.groupby(d, :a1)
 _gc()
 _gc()
 ################

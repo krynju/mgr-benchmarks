@@ -1,4 +1,4 @@
-FROM krynju/julia-nightly-buster
+FROM julia:1.8.0
 WORKDIR /tmp
 RUN mkdir jlsysimage; \
     cd jlsysimage; \
