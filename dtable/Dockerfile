@@ -1,4 +1,14 @@
 FROM julia:1.8.0
+
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		ca-certificates \
+		g++ \
+		curl \
+		wget \
+	; \
+	rm -rf /var/lib/apt/lists/*
 WORKDIR /tmp
 RUN mkdir jlsysimage; \
     cd jlsysimage; \

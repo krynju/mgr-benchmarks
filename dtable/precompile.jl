@@ -1,4 +1,4 @@
-using Dagger, DataFrames, CSV, OnlineStats, Tables, BenchmarkTools
+using Dagger, DataFrames, CSV, OnlineStats, Tables, BenchmarkTools, DTables
 f = Dagger.@spawn 10+10
 fetch(f)
 
@@ -14,8 +14,8 @@ fetch(map(x->(r=x.a+x.b,), dt))
 fetch(filter(x->x.a>5, dt))
 fetch(reduce(fit!, dt, cols=[:a], init=Variance()))
 fetch(reduce(fit!, dt, init=Mean()))
-fetch(Dagger.groupby(dt, :a))
-fetch(reduce(fit!, Dagger.groupby(dt, :a), cols=[:a], init=Variance()))
-fetch(reduce(fit!, Dagger.groupby(dt, :a), init=Mean()))
+fetch(DTables.groupby(dt, :a))
+fetch(reduce(fit!, DTables.groupby(dt, :a), cols=[:a], init=Variance()))
+fetch(reduce(fit!, DTables.groupby(dt, :a), init=Mean()))
 fetch(innerjoin(dt, dt, on=:a))
 @benchmark fetch(innerjoin(dt, dt, on=:a))
